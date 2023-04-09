@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRecipeById = void 0;
+exports.getRecipesByPage = exports.getRecipeById = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const recipe_1 = __importDefault(require("../models/recipe"));
 const getRecipeById = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,3 +27,18 @@ const getRecipeById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getRecipeById = getRecipeById;
+const getRecipesByPage = (perPage, offset) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let totalRecipes = yield recipe_1.default.collection.countDocuments();
+        let skippingCount = perPage * (offset - 1);
+        if (skippingCount > totalRecipes) {
+            skippingCount = Math.floor(totalRecipes / perPage) * perPage;
+        }
+        let Recipes = yield recipe_1.default.find({}).sort('title').skip(skippingCount).limit(perPage);
+        return { Recipes, pages: Math.ceil(totalRecipes / perPage), offset: offset };
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+exports.getRecipesByPage = getRecipesByPage;

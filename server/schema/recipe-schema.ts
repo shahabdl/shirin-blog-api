@@ -8,7 +8,7 @@ import {
   GraphQLList,
 } from "graphql";
 
-import { getRecipeById } from "../db/controller/recipe";
+import { getRecipeById, getRecipesByPage } from "../db/controller/recipe";
 import { getUserById } from "../db/controller/user";
 
 const UserType = new GraphQLObjectType({
@@ -67,6 +67,15 @@ const RecipeType = new GraphQLObjectType({
   }),
 });
 
+const ReciptPaginationType = new GraphQLObjectType({
+  name: "RecipePaggination",
+  fields: () => ({
+    Recipes: { type: GraphQLList(RecipeType) },
+    pages: { type: GraphQLInt },
+    offset: { type: GraphQLInt },
+  }),
+});
+
 const RecipeRootQuery = new GraphQLObjectType({
   name: "RecipeRootQuery",
   fields: {
@@ -80,6 +89,14 @@ const RecipeRootQuery = new GraphQLObjectType({
           }
           return null;
         });
+      },
+    },
+    Recipes: {
+      type: ReciptPaginationType,
+      args: { perPage: { type: GraphQLInt }, offset: { type: GraphQLInt } },
+      async resolve(parent, args) {
+        let test = await getRecipesByPage(args.perPage, args.offset)        
+        return getRecipesByPage(args.perPage, args.offset);
       },
     },
     Recipe: {

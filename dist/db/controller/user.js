@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserById = void 0;
+exports.getUsers = exports.getUserById = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_1 = __importDefault(require("../models/user"));
 const getUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,3 +27,12 @@ const getUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getUserById = getUserById;
+const getUsers = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        return yield user_1.default.find({});
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+exports.getUsers = getUsers;
