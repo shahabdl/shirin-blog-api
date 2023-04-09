@@ -1,12 +1,39 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_1 = require("graphql");
-const mockData_1 = require("../mockData");
-const AuthorType = new graphql_1.GraphQLObjectType({
-    name: "Author",
+const recipe_1 = require("../db/controller/recipe");
+const user_1 = require("../db/controller/user");
+const UserType = new graphql_1.GraphQLObjectType({
+    name: "User",
     fields: () => ({
+        id: { type: graphql_1.GraphQLID },
         name: { type: graphql_1.GraphQLString },
         image: { type: graphql_1.GraphQLString },
+        role: { type: graphql_1.GraphQLString },
+    }),
+});
+const LikesType = new graphql_1.GraphQLObjectType({
+    name: "Likes",
+    fields: () => ({
+        count: { type: graphql_1.GraphQLInt },
+        users: {
+            type: (0, graphql_1.GraphQLList)(UserType),
+            resolve(parent, args) {
+                let usersList = [];
+                for (let user in parent.users) {
+                    usersList.push((0, user_1.getUserById)(parent.users[user]));
+                }
+                return [...usersList];
+            },
+        },
+    }),
+});
+const TimingType = new graphql_1.GraphQLObjectType({
+    name: "Timing",
+    fields: () => ({
+        preperation: { type: graphql_1.GraphQLInt },
+        cookTime: { type: graphql_1.GraphQLInt },
+        additional: { type: graphql_1.GraphQLInt },
     }),
 });
 const RecipeType = new graphql_1.GraphQLObjectType({
@@ -16,47 +43,40 @@ const RecipeType = new graphql_1.GraphQLObjectType({
         image: { type: graphql_1.GraphQLString },
         title: { type: graphql_1.GraphQLString },
         description: { type: graphql_1.GraphQLString },
-        cookTime: { type: graphql_1.GraphQLInt },
+        timing: { type: TimingType },
         difficulty: { type: graphql_1.GraphQLString },
-        likes: { type: graphql_1.GraphQLInt },
+        likes: { type: LikesType },
         userLiked: { type: graphql_1.GraphQLBoolean },
         author: {
-            type: AuthorType,
+            type: UserType,
             resolve(parent, args) {
-                return mockData_1.Authors[parent.author];
+                return (0, user_1.getUserById)(parent.author);
             },
         },
     }),
 });
-const RootQuery = new graphql_1.GraphQLObjectType({
-    name: "RootQueryType",
+const RecipeRootQuery = new graphql_1.GraphQLObjectType({
+    name: "RecipeRootQuery",
     fields: {
-        Authors: {
-            type: new graphql_1.GraphQLList(AuthorType),
-            resolve(parent) {
-                return mockData_1.Authors;
-            },
-        },
         Author: {
-            type: AuthorType,
+            type: UserType,
             args: { id: { type: graphql_1.GraphQLID } },
             resolve(parent, args) {
-                return mockData_1.Authors[Number(args.id)];
-            },
-        },
-        Recipes: {
-            type: new graphql_1.GraphQLList(RecipeType),
-            resolve(parent) {
-                return mockData_1.MockData;
+                return (0, user_1.getUserById)(args.id).then((user) => {
+                    if (user && user.role === "author") {
+                        return user;
+                    }
+                    return null;
+                });
             },
         },
         Recipe: {
             type: RecipeType,
             args: { id: { type: graphql_1.GraphQLID } },
             resolve(parent, args) {
-                return mockData_1.MockData[Number(args.id)];
+                return (0, recipe_1.getRecipeById)(args.id);
             },
         },
     },
 });
-exports.default = new graphql_1.GraphQLSchema({ query: RootQuery });
+exports.default = new graphql_1.GraphQLSchema({ query: RecipeRootQuery });

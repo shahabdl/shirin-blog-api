@@ -8,13 +8,42 @@ import {
   GraphQLList,
 } from "graphql";
 
-import { MockData, Authors } from "../mockData";
+import { getRecipeById } from "../db/controller/recipe";
+import { getUserById } from "../db/controller/user";
 
-const AuthorType = new GraphQLObjectType({
-  name: "Author",
+const UserType = new GraphQLObjectType({
+  name: "User",
   fields: () => ({
+    id: { type: GraphQLID },
     name: { type: GraphQLString },
     image: { type: GraphQLString },
+    role: { type: GraphQLString },
+  }),
+});
+
+const LikesType = new GraphQLObjectType({
+  name: "Likes",
+  fields: () => ({
+    count: { type: GraphQLInt },
+    users: {
+      type: GraphQLList(UserType),
+      resolve(parent, args) {
+        let usersList = [];
+        for (let user in parent.users) {
+          usersList.push(getUserById(parent.users[user]));
+        }
+        return [...usersList];
+      },
+    },
+  }),
+});
+
+const TimingType = new GraphQLObjectType({
+  name: "Timing",
+  fields: () => ({
+    preperation: { type: GraphQLInt },
+    cookTime: { type: GraphQLInt },
+    additional: { type: GraphQLInt },
   }),
 });
 
@@ -25,50 +54,42 @@ const RecipeType = new GraphQLObjectType({
     image: { type: GraphQLString },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
-    cookTime: { type: GraphQLInt },
+    timing: { type: TimingType },
     difficulty: { type: GraphQLString },
-    likes: { type: GraphQLInt },
+    likes: { type: LikesType },
     userLiked: { type: GraphQLBoolean },
     author: {
-      type: AuthorType,
+      type: UserType,
       resolve(parent, args) {
-        return Authors[parent.author];
+        return getUserById(parent.author);
       },
     },
   }),
 });
 
-const RootQuery = new GraphQLObjectType({
-  name: "RootQueryType",
+const RecipeRootQuery = new GraphQLObjectType({
+  name: "RecipeRootQuery",
   fields: {
-    Authors: {
-      type: new GraphQLList(AuthorType),
-      resolve(parent) {
-        return Authors;
-      },
-    },
     Author: {
-      type: AuthorType,
+      type: UserType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return Authors[Number(args.id)];
-      },
-    },
-
-    Recipes: {
-      type: new GraphQLList(RecipeType),
-      resolve(parent) {
-        return MockData;
+        return getUserById(args.id).then((user) => {
+          if (user && user.role === "author") {
+            return user;
+          }
+          return null;
+        });
       },
     },
     Recipe: {
       type: RecipeType,
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
-        return MockData[Number(args.id)];
+        return getRecipeById(args.id);
       },
     },
   },
 });
 
-export default new GraphQLSchema({ query: RootQuery });
+export default new GraphQLSchema({ query: RecipeRootQuery });
