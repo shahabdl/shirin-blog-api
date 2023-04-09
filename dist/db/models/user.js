@@ -27,8 +27,8 @@ const mongoose_1 = __importStar(require("mongoose"));
 const UserSchema = new mongoose_1.Schema({
     name: { type: String, required: [true, "user name required"] },
     image: { type: String, required: [true, "user image required"] },
-    signUpAt: { type: Date, required: [true, "user signup date required"] },
-    lastLogin: { type: Date, required: [true, "user last login date required"] },
+    signUpAt: { type: Date },
+    lastLogin: { type: Date },
     likes: { type: [mongoose_1.default.Types.ObjectId], ref: "recipes" },
     role: {
         type: String,

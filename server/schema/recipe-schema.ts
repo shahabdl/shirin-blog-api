@@ -7,14 +7,18 @@ import {
   GraphQLSchema,
   GraphQLList,
 } from "graphql";
-
-import { getRecipeById, getRecipesByPage } from "../db/controller/recipe";
+import mongoose from "mongoose";
+import {
+  getRecipeById,
+  getRecipesByPage,
+  likeRecipe,
+} from "../db/controller/recipe";
 import { getUserById } from "../db/controller/user";
 
 const UserType = new GraphQLObjectType({
   name: "User",
   fields: () => ({
-    id: { type: GraphQLID },
+    _id: { type: GraphQLID },
     name: { type: GraphQLString },
     image: { type: GraphQLString },
     role: { type: GraphQLString },
@@ -25,12 +29,12 @@ const LikesType = new GraphQLObjectType({
   name: "Likes",
   fields: () => ({
     count: { type: GraphQLInt },
-    users: {
+    likedUsers: {
       type: GraphQLList(UserType),
-      resolve(parent, args) {
+      async resolve(parent, args) {
         let usersList = [];
-        for (let user in parent.users) {
-          usersList.push(getUserById(parent.users[user]));
+        for (let user in parent.likedUsers) {      
+          usersList.push(await getUserById(parent.likedUsers[user]));
         }
         return [...usersList];
       },
@@ -95,7 +99,7 @@ const RecipeRootQuery = new GraphQLObjectType({
       type: ReciptPaginationType,
       args: { perPage: { type: GraphQLInt }, offset: { type: GraphQLInt } },
       async resolve(parent, args) {
-        let test = await getRecipesByPage(args.perPage, args.offset)        
+        let test = await getRecipesByPage(args.perPage, args.offset);
         return getRecipesByPage(args.perPage, args.offset);
       },
     },
@@ -109,4 +113,21 @@ const RecipeRootQuery = new GraphQLObjectType({
   },
 });
 
-export default new GraphQLSchema({ query: RecipeRootQuery });
+// Mutations
+const mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    likeRecipe: {
+      type: RecipeType,
+      args: {
+        recipeId: { type: GraphQLID },
+      },
+      resolve(parent, args) {
+        const id = new mongoose.Types.ObjectId("6431e289ea7813179ea1b567");
+        return likeRecipe(id, args.recipeId);
+      },
+    },
+  },
+});
+
+export default new GraphQLSchema({ query: RecipeRootQuery, mutation });

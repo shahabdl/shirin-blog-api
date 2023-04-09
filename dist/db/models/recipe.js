@@ -22,20 +22,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+const user_1 = __importDefault(require("./user"));
 const TimingSchema = new mongoose_1.Schema({
     preperation: { type: Number, required: [true, "preperation required"] },
     cookTime: { type: Number, required: [true, "cookTime required"] },
     additional: { type: Number, required: [true, "additional required"] },
 });
 const LikesSchema = new mongoose_1.Schema({
-    count: { type: Number, required: [true, "count required"] },
-    users: {
-        type: [mongoose_1.default.Types.ObjectId],
-        required: [true, "users required"],
-    },
-});
+    count: { type: Number },
+    likedUsers: [
+        {
+            type: mongoose_1.default.Types.ObjectId,
+            ref: user_1.default,
+        },
+    ],
+}, { _id: false });
 const IngredientSchema = new mongoose_1.Schema({
     name: { type: String, required: [true, "ingredient name required"] },
     quantity: { type: String, required: [true, "quantity required"] },
@@ -52,10 +58,12 @@ const RecipeSchema = new mongoose_1.Schema({
         required: [true, "atuhor required"],
     },
     likes: { type: LikesSchema, required: [true, "likes required"] },
-    ingredients: {
-        type: IngredientSchema,
-        required: [true, "ingredients required"],
-    },
+    ingredients: [
+        {
+            type: IngredientSchema,
+            required: [true, "ingredients required"],
+        },
+    ],
     steps: { type: [String], required: [true, "steps required"] },
 });
 exports.default = mongoose_1.default.model("recipes", RecipeSchema);
