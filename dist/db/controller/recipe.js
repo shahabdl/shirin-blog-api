@@ -31,6 +31,12 @@ exports.getRecipeById = getRecipeById;
 const getRecipesByPage = (perPage, offset) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let totalRecipes = yield recipe_1.default.collection.countDocuments();
+        if (perPage < 1) {
+            perPage = 1;
+        }
+        if (offset < 1) {
+            offset = 1;
+        }
         let skippingCount = perPage * (offset - 1);
         if (skippingCount > totalRecipes) {
             skippingCount = Math.floor(totalRecipes / perPage) * perPage;
@@ -47,7 +53,7 @@ const getRecipesByPage = (perPage, offset) => __awaiter(void 0, void 0, void 0, 
         };
     }
     catch (err) {
-        console.log(err);
+        console.log("getRecipesByPage", err);
     }
 });
 exports.getRecipesByPage = getRecipesByPage;
@@ -91,3 +97,7 @@ const likeRecipe = (userId, recipeId) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.likeRecipe = likeRecipe;
+const createRecipe = ({ id, session }) => __awaiter(void 0, void 0, void 0, function* () {
+    if (session && session.userId) {
+    }
+});

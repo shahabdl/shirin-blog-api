@@ -32,18 +32,10 @@ const RecipeSchema = new Schema({
   timing: { type: TimingSchema, required: [true, "timing required"] },
   servings: { type: Number, required: [true, "servings required"] },
   difficulty: { type: String, required: [true, "difficulty required"] },
-  author: {
-    type: mongoose.Types.ObjectId,
-    required: [true, "atuhor required"],
-  },
-  likes: { type: LikesSchema, required: [true, "likes required"] },
-  ingredients: [
-    {
-      type: IngredientSchema,
-      required: [true, "ingredients required"],
-    },
-  ],
-  steps: { type: [String], required: [true, "steps required"] },
+  author: { type: mongoose.Types.ObjectId },
+  likes: { type: LikesSchema, required:[true, 'like required']},
+  ingredients: [{ type: IngredientSchema}],
+  steps: { type: [String]},
 });
 
 export default mongoose.model("recipes", RecipeSchema);

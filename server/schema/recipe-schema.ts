@@ -1,11 +1,8 @@
 import {
   GraphQLObjectType,
   GraphQLID,
-  GraphQLString,
   GraphQLInt,
-  GraphQLBoolean,
   GraphQLSchema,
-  GraphQLList,
 } from "graphql";
 import mongoose from "mongoose";
 import {
@@ -14,72 +11,11 @@ import {
   likeRecipe,
 } from "../db/controller/recipe";
 import { getUserById } from "../db/controller/user";
+import { RecipeInputType, RecipeType, ReciptPaginationType, UserType } from "./recipeGQLTypes";
 
-const UserType = new GraphQLObjectType({
-  name: "User",
-  fields: () => ({
-    _id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    image: { type: GraphQLString },
-    role: { type: GraphQLString },
-  }),
-});
-
-const LikesType = new GraphQLObjectType({
-  name: "Likes",
-  fields: () => ({
-    count: { type: GraphQLInt },
-    likedUsers: {
-      type: GraphQLList(UserType),
-      async resolve(parent, args) {
-        let usersList = [];
-        for (let user in parent.likedUsers) {      
-          usersList.push(await getUserById(parent.likedUsers[user]));
-        }
-        return [...usersList];
-      },
-    },
-  }),
-});
-
-const TimingType = new GraphQLObjectType({
-  name: "Timing",
-  fields: () => ({
-    preperation: { type: GraphQLInt },
-    cookTime: { type: GraphQLInt },
-    additional: { type: GraphQLInt },
-  }),
-});
-
-const RecipeType = new GraphQLObjectType({
-  name: "Recipe",
-  fields: () => ({
-    id: { type: GraphQLID },
-    image: { type: GraphQLString },
-    title: { type: GraphQLString },
-    description: { type: GraphQLString },
-    timing: { type: TimingType },
-    difficulty: { type: GraphQLString },
-    likes: { type: LikesType },
-    userLiked: { type: GraphQLBoolean },
-    author: {
-      type: UserType,
-      resolve(parent, args) {
-        return getUserById(parent.author);
-      },
-    },
-  }),
-});
-
-const ReciptPaginationType = new GraphQLObjectType({
-  name: "RecipePaggination",
-  fields: () => ({
-    Recipes: { type: GraphQLList(RecipeType) },
-    pages: { type: GraphQLInt },
-    offset: { type: GraphQLInt },
-  }),
-});
-
+/**
+ * Queries
+ */
 const RecipeRootQuery = new GraphQLObjectType({
   name: "RecipeRootQuery",
   fields: {
@@ -125,6 +61,12 @@ const mutation = new GraphQLObjectType({
       resolve(parent, args) {
         const id = new mongoose.Types.ObjectId("6431e289ea7813179ea1b567");
         return likeRecipe(id, args.recipeId);
+      },
+    },
+    createRecipe: {
+      type: RecipeType,
+      args: {
+        recipeArgs: { type: RecipeInputType },
       },
     },
   },
