@@ -71,7 +71,10 @@ const mutation = new graphql_1.GraphQLObjectType({
         createRecipe: {
             type: recipeGQLTypes_1.RecipeType,
             args: {
-                recipeArgs: { type: recipeGQLTypes_1.RecipeInputType },
+                recipeArgs: { type: recipeGQLTypes_1.RecipeCreateInputType },
+            },
+            resolve(_, args, context) {
+                (0, recipe_1.createRecipe)({ recipeArgs: args.recipeArgs, session: context.session });
             },
         },
     },

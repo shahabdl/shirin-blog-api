@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import recipeModel from "../models/recipe";
 import userModel from "../models/user";
-import { Session } from "../../typedefs/typedef";
+import { RecipeArgs, Session } from "../../typedefs/typedef";
 
 interface CreateReciptProps {
-  id: mongoose.Types.ObjectId;
+  recipeArgs: RecipeArgs;
   session: Session;
 }
 
@@ -92,8 +92,7 @@ const likeRecipe = async (
   }
 };
 
-const createRecipe = async ({ id, session }: CreateReciptProps) => {
-  if (session && session.userId) {
-  }
+const createRecipe = async ({ recipeArgs, session }: CreateReciptProps) => {
+  console.log(recipeArgs);
 };
-export { getRecipeById, getRecipesByPage, likeRecipe };
+export { getRecipeById, getRecipesByPage, likeRecipe, createRecipe };

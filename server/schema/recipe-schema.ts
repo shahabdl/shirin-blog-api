@@ -6,12 +6,19 @@ import {
 } from "graphql";
 import mongoose from "mongoose";
 import {
+  createRecipe,
   getRecipeById,
   getRecipesByPage,
   likeRecipe,
 } from "../db/controller/recipe";
 import { getUserById } from "../db/controller/user";
-import { RecipeInputType, RecipeType, ReciptPaginationType, UserType } from "./recipeGQLTypes";
+import {
+  RecipeCreateInputType,
+  RecipeType,
+  ReciptPaginationType,
+  UserType,
+} from "./recipeGQLTypes";
+import { GraphQlContext } from "../typedefs/typedef";
 
 /**
  * Queries
@@ -66,7 +73,10 @@ const mutation = new GraphQLObjectType({
     createRecipe: {
       type: RecipeType,
       args: {
-        recipeArgs: { type: RecipeInputType },
+        recipeArgs: { type: RecipeCreateInputType },
+      },
+      resolve(_: any, args, context: GraphQlContext) {
+        createRecipe({ recipeArgs: args.recipeArgs, session: context.session });
       },
     },
   },

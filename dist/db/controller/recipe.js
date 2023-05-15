@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeRecipe = exports.getRecipesByPage = exports.getRecipeById = void 0;
+exports.createRecipe = exports.likeRecipe = exports.getRecipesByPage = exports.getRecipeById = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const recipe_1 = __importDefault(require("../models/recipe"));
 const user_1 = __importDefault(require("../models/user"));
@@ -97,7 +97,7 @@ const likeRecipe = (userId, recipeId) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.likeRecipe = likeRecipe;
-const createRecipe = ({ id, session }) => __awaiter(void 0, void 0, void 0, function* () {
-    if (session && session.userId) {
-    }
+const createRecipe = ({ recipeArgs, session }) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(recipeArgs);
 });
+exports.createRecipe = createRecipe;

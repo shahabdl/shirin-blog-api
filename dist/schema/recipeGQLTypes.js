@@ -9,13 +9,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReciptPaginationType = exports.RecipeType = exports.TimingType = exports.LikesType = exports.UserType = exports.RecipeInputType = void 0;
+exports.ReciptPaginationType = exports.RecipeType = exports.TimingType = exports.LikesType = exports.UserType = exports.RecipeCreateInputType = exports.RecipeDifficultyEnums = void 0;
 const graphql_1 = require("graphql");
 const user_1 = require("../db/controller/user");
-exports.RecipeInputType = new graphql_1.GraphQLInputObjectType({
+exports.RecipeDifficultyEnums = new graphql_1.GraphQLEnumType({
+    name: "RecipeDifficultyEnums",
+    values: {
+        EASY: { value: 0 },
+        MEDIUM: { value: 1 },
+        HARD: { value: 2 },
+    },
+});
+const RecipeCreateTiminType = new graphql_1.GraphQLInputObjectType({
+    name: "RecipeCreateTimingType",
+    fields: {
+        preperation: { type: graphql_1.GraphQLInt },
+        cookTime: { type: graphql_1.GraphQLInt },
+        additional: { type: graphql_1.GraphQLInt },
+    },
+});
+exports.RecipeCreateInputType = new graphql_1.GraphQLInputObjectType({
     name: "RecipeInputTpe",
     fields: {
         name: { type: graphql_1.GraphQLString },
+        image: { type: graphql_1.GraphQLString },
+        title: { type: graphql_1.GraphQLString },
+        description: { type: graphql_1.GraphQLString },
+        difficulty: { type: exports.RecipeDifficultyEnums },
+        timing: { type: RecipeCreateTiminType },
     },
 });
 exports.UserType = new graphql_1.GraphQLObjectType({
