@@ -93,6 +93,37 @@ const likeRecipe = async (
 };
 
 const createRecipe = async ({ recipeArgs, session }: CreateReciptProps) => {
-  console.log(recipeArgs);
+  const {
+    image,
+    title,
+    description,
+    difficulty,
+    timing,
+    servings,
+    status,
+  } = recipeArgs;
+  try {
+    const newRecipe = await recipeModel.create({
+      title,
+      image,
+      description,
+      difficulty,
+      likes: {
+        count: 0,
+        likedUsers: [],
+      },
+      timing: {
+        preperation: timing.preperation,
+        cookTime: timing.cookTime,
+        additional: timing.additional,
+      },
+      servings,
+      status,
+    });
+    newRecipe.save();
+    return newRecipe;
+  } catch (error) {
+    console.log(error);
+  }
 };
 export { getRecipeById, getRecipesByPage, likeRecipe, createRecipe };

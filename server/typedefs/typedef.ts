@@ -6,25 +6,31 @@ export interface Session {
   userId: mongoose.Types.ObjectId;
 }
 
-export interface GraphQlContext{
-    session: Session;
+export interface GraphQlContext {
+  session: Session;
 }
 
-enum difficulty {
-    EASY = 0,
-    MEDIUM = 1,
-    HARD = 2
+enum Difficulty {
+  EASY = 'EASY',
+  MEDIUM = 'MEDIUM',
+  HARD = 'MEDIUM',
 }
-export interface RecipeArgs{
-    name: String,
-    image: String,
-    title: String,
-    description: String,
-    difficulty: difficulty,
-    timing:{
-        preperation: Number,
-        cookTime: Number,
-        additional: Number
-    }
+enum Status {
+  PUBLISHED = 'PUBLISHED',
+  DRAFT = 'DRAFT',
+  TRASH = 'TRASH',
 }
-
+export interface RecipeArgs {
+  name: String;
+  image: String;
+  title: String;
+  description: String;
+  difficulty: Difficulty;
+  status: Status;
+  timing: {
+    preperation: Number;
+    cookTime: Number;
+    additional: Number;
+  };
+  servings: Number;
+}

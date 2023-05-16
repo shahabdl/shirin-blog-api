@@ -9,15 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReciptPaginationType = exports.RecipeType = exports.TimingType = exports.LikesType = exports.UserType = exports.RecipeCreateInputType = exports.RecipeDifficultyEnums = void 0;
+exports.ReciptPaginationType = exports.RecipeType = exports.TimingType = exports.LikesType = exports.UserType = exports.RecipeCreateInputType = exports.RecipeStatusEnum = exports.RecipeDifficultyEnums = void 0;
 const graphql_1 = require("graphql");
 const user_1 = require("../db/controller/user");
 exports.RecipeDifficultyEnums = new graphql_1.GraphQLEnumType({
     name: "RecipeDifficultyEnums",
     values: {
-        EASY: { value: 0 },
-        MEDIUM: { value: 1 },
-        HARD: { value: 2 },
+        EASY: { value: "EASY" },
+        MEDIUM: { value: "MEDIUM" },
+        HARD: { value: "HARD" },
+    },
+});
+exports.RecipeStatusEnum = new graphql_1.GraphQLEnumType({
+    name: "RecipeStatusEnum",
+    values: {
+        PUBLISHED: { value: "PUBLISHED" },
+        DRAFT: { value: "DRAFT" },
+        TRASH: { value: "TRASH" },
     },
 });
 const RecipeCreateTiminType = new graphql_1.GraphQLInputObjectType({
@@ -37,6 +45,8 @@ exports.RecipeCreateInputType = new graphql_1.GraphQLInputObjectType({
         description: { type: graphql_1.GraphQLString },
         difficulty: { type: exports.RecipeDifficultyEnums },
         timing: { type: RecipeCreateTiminType },
+        servings: { type: graphql_1.GraphQLInt },
+        status: { type: exports.RecipeStatusEnum },
     },
 });
 exports.UserType = new graphql_1.GraphQLObjectType({
@@ -80,14 +90,17 @@ exports.RecipeType = new graphql_1.GraphQLObjectType({
         id: { type: graphql_1.GraphQLID },
         image: { type: graphql_1.GraphQLString },
         title: { type: graphql_1.GraphQLString },
+        creationDate: { type: graphql_1.GraphQLString },
+        updateDate: { type: graphql_1.GraphQLString },
         description: { type: graphql_1.GraphQLString },
         timing: { type: exports.TimingType },
         difficulty: { type: graphql_1.GraphQLString },
         likes: { type: exports.LikesType },
         userLiked: { type: graphql_1.GraphQLBoolean },
+        status: { type: exports.RecipeStatusEnum },
         author: {
             type: exports.UserType,
-            resolve(parent, args) {
+            resolve(parent) {
                 return (0, user_1.getUserById)(parent.author);
             },
         },

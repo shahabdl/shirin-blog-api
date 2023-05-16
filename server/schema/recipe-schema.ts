@@ -65,7 +65,7 @@ const mutation = new GraphQLObjectType({
       args: {
         recipeId: { type: GraphQLID },
       },
-      resolve(parent, args) {
+      resolve(_:any, args) {
         const id = new mongoose.Types.ObjectId("6431e289ea7813179ea1b567");
         return likeRecipe(id, args.recipeId);
       },
@@ -76,7 +76,7 @@ const mutation = new GraphQLObjectType({
         recipeArgs: { type: RecipeCreateInputType },
       },
       resolve(_: any, args, context: GraphQlContext) {
-        createRecipe({ recipeArgs: args.recipeArgs, session: context.session });
+        return createRecipe({ recipeArgs: args.recipeArgs, session: context.session });
       },
     },
   },

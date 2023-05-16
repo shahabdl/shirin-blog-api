@@ -27,15 +27,23 @@ const IngredientSchema = new Schema({
 
 const RecipeSchema = new Schema({
   title: { type: String, required: [true, "title required"] },
+  creationDate: { type: Date, default: Date.now },
+  updateDate: { type: Date, default: Date.now },
   image: { type: String, required: [true, "image required"] },
   description: { type: String, required: [true, "description required"] },
   timing: { type: TimingSchema, required: [true, "timing required"] },
   servings: { type: Number, required: [true, "servings required"] },
-  difficulty: { type: String, required: [true, "difficulty required"] },
-  author: { type: mongoose.Types.ObjectId },
-  likes: { type: LikesSchema, required:[true, 'like required']},
-  ingredients: [{ type: IngredientSchema}],
-  steps: { type: [String]},
+  difficulty: {
+    type: String,
+    required: [true, "difficulty required"],
+    enum: ["EASY", "MEDIUM", "HARD"],
+  },
+  status: { type: String, enum: ["PUBLISHED", "DRAFT", "TRASH"] },
+  author: { type: mongoose.Types.ObjectId, ref: 'user' },
+  likes: { type: LikesSchema, required: [true, "like required"] },
+  ingredients: [{ type: IngredientSchema }],
+  steps: { type: [String] },
+  comments: { type: [mongoose.Types.ObjectId], ref: 'comment' },
 });
 
 export default mongoose.model("recipes", RecipeSchema);

@@ -98,6 +98,30 @@ const likeRecipe = (userId, recipeId) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.likeRecipe = likeRecipe;
 const createRecipe = ({ recipeArgs, session }) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(recipeArgs);
+    const { image, title, description, difficulty, timing, servings, status, } = recipeArgs;
+    try {
+        const newRecipe = yield recipe_1.default.create({
+            title,
+            image,
+            description,
+            difficulty,
+            likes: {
+                count: 0,
+                likedUsers: [],
+            },
+            timing: {
+                preperation: timing.preperation,
+                cookTime: timing.cookTime,
+                additional: timing.additional,
+            },
+            servings,
+            status,
+        });
+        newRecipe.save();
+        return newRecipe;
+    }
+    catch (error) {
+        console.log(error);
+    }
 });
 exports.createRecipe = createRecipe;

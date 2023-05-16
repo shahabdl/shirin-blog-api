@@ -1,8 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var difficulty;
-(function (difficulty) {
-    difficulty[difficulty["EASY"] = 0] = "EASY";
-    difficulty[difficulty["MEDIUM"] = 1] = "MEDIUM";
-    difficulty[difficulty["HARD"] = 2] = "HARD";
-})(difficulty || (difficulty = {}));
+var Difficulty;
+(function (Difficulty) {
+    Difficulty["EASY"] = "EASY";
+    Difficulty["MEDIUM"] = "MEDIUM";
+    Difficulty["HARD"] = "MEDIUM";
+})(Difficulty || (Difficulty = {}));
+var Status;
+(function (Status) {
+    Status["PUBLISHED"] = "PUBLISHED";
+    Status["DRAFT"] = "DRAFT";
+    Status["TRASH"] = "TRASH";
+})(Status || (Status = {}));
