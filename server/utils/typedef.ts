@@ -1,6 +1,5 @@
 import { GraphQLArgs, GraphQLObjectType } from "graphql";
 import mongoose from "mongoose";
-import { RecipeCreateInputType } from "../schema/recipeGQLTypes";
 
 export interface Session {
   userId: mongoose.Types.ObjectId;

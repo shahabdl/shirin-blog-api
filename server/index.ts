@@ -1,21 +1,44 @@
 import express from "express";
 import { config } from "dotenv";
-import { graphqlHTTP } from "express-graphql";
-import schema from "./schema/recipe-schema";
 import cors from "cors";
 import ConnectToDB from "./db/connect";
+import session from "./middleware/session";
+import { createServer } from "http";
+import { ApolloServer } from "@apollo/server";
+import RecipeTypeDefs from "./graphql/typedefs/recipes";
+import RecipeResolvers from "./graphql/resolvers/recipes";
+import { expressMiddleware } from "@apollo/server/express4";
+import bodyParser from "body-parser";
 
 config();
 const port = process.env.PORT || 5000;
+const url = process.env.URL || `http://localhost:${port}/graphql`;
 const app = express();
 
-const startApi = async () => {  
+const startApi = async () => {
   try {
     if (process.env.DB_URL) {
       await ConnectToDB(process.env.DB_URL);
-      app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
+      const httpServer = createServer(app);
+      const server = new ApolloServer({
+        typeDefs: RecipeTypeDefs,
+        resolvers: RecipeResolvers,
+        csrfPrevention: true,
       });
+      await server.start();
+      const corsOption = { origin: "http://localhost:3000", credentials: true };
+      app.use(cors(corsOption));
+      app.use(
+        "/graphql",
+        bodyParser.json(),
+        expressMiddleware(server, {
+          context: async ({ req, res }) => ({
+            session: { test: "test" },
+          }),
+        })
+      );
+      httpServer.listen(port);
+      console.log(`🚀  Server ready at: ${url}`);
     } else {
       throw new Error("Cannot Connect to database");
     }
@@ -23,25 +46,5 @@ const startApi = async () => {
     console.log(error);
   }
 };
-app.use(cors());
-
-app.use((req,res,next)=>{
-  res.setHeader('Access-Control-Allow_Origin', '*');
-  res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.setHeader('Access-Control-Allow-Methods','GET,POST,PATCH,DELETE');
-  next();
-});
 
 startApi();
-
-app.use(
-  "/graphql",
-  graphqlHTTP({
-    schema,
-    graphiql: process.env.NODE_ENV === "development",
-  })
-);
-

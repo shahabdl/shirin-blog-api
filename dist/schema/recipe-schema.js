@@ -55,7 +55,7 @@ const RecipeRootQuery = new graphql_1.GraphQLObjectType({
     },
 });
 // Mutations
-const mutation = new graphql_1.GraphQLObjectType({
+const Mutation = new graphql_1.GraphQLObjectType({
     name: "Mutation",
     fields: {
         likeRecipe: {
@@ -74,9 +74,15 @@ const mutation = new graphql_1.GraphQLObjectType({
                 recipeArgs: { type: recipeGQLTypes_1.RecipeCreateInputType },
             },
             resolve(_, args, context) {
-                return (0, recipe_1.createRecipe)({ recipeArgs: args.recipeArgs, session: context.session });
+                // return createRecipe({
+                //   recipeArgs: args.recipeArgs,
+                //   session: context.session,
+                // });
             },
         },
     },
 });
-exports.default = new graphql_1.GraphQLSchema({ query: RecipeRootQuery, mutation });
+exports.default = new graphql_1.GraphQLSchema({
+    query: RecipeRootQuery,
+    mutation: Mutation,
+});

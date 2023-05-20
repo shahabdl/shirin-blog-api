@@ -14,20 +14,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = require("dotenv");
-const express_graphql_1 = require("express-graphql");
-const recipe_schema_1 = __importDefault(require("./schema/recipe-schema"));
 const cors_1 = __importDefault(require("cors"));
 const connect_1 = __importDefault(require("./db/connect"));
+const http_1 = require("http");
+const server_1 = require("@apollo/server");
+const recipes_1 = __importDefault(require("./graphql/typedefs/recipes"));
+const recipes_2 = __importDefault(require("./graphql/resolvers/recipes"));
+const express4_1 = require("@apollo/server/express4");
+const body_parser_1 = __importDefault(require("body-parser"));
 (0, dotenv_1.config)();
 const port = process.env.PORT || 5000;
+const url = process.env.URL || `http://localhost:${port}/graphql`;
 const app = (0, express_1.default)();
 const startApi = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (process.env.DB_URL) {
             yield (0, connect_1.default)(process.env.DB_URL);
-            app.listen(port, () => {
-                console.log(`Server running on port ${port}`);
+            const httpServer = (0, http_1.createServer)(app);
+            const server = new server_1.ApolloServer({
+                typeDefs: recipes_1.default,
+                resolvers: recipes_2.default,
+                csrfPrevention: true,
             });
+            yield server.start();
+            const corsOption = { origin: "http://localhost:3000", credentials: true };
+            app.use((0, cors_1.default)(corsOption));
+            app.use("/graphql", body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, {
+                context: ({ req, res }) => __awaiter(void 0, void 0, void 0, function* () {
+                    return ({
+                        session: { test: "test" },
+                    });
+                }),
+            }));
+            httpServer.listen(port);
+            console.log(`🚀  Server ready at: ${url}`);
         }
         else {
             throw new Error("Cannot Connect to database");
@@ -37,15 +57,4 @@ const startApi = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log(error);
     }
 });
-app.use((0, cors_1.default)());
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow_Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE');
-    next();
-});
 startApi();
-app.use("/graphql", (0, express_graphql_1.graphqlHTTP)({
-    schema: recipe_schema_1.default,
-    graphiql: process.env.NODE_ENV === "development",
-}));

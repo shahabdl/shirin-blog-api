@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import recipeModel from "../models/recipe";
 import userModel from "../models/user";
-import { RecipeArgs, Session } from "../../typedefs/typedef";
+import { RecipeArgs, Session } from "../../utils/typedef";
 
 interface CreateReciptProps {
   recipeArgs: RecipeArgs;
