@@ -31,7 +31,7 @@ export interface RecipeArgs {
   };
   servings: Number;
 }
-export interface SignupArgs {
+export interface AuthArgs {
   email: string;
   password: string;
 }

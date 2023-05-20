@@ -1,12 +1,12 @@
 import { GraphQLError } from "graphql/error";
 import user from "../../db/models/user";
-import { SignupArgs } from "../../utils/typedef";
+import { AuthArgs } from "../../utils/typedef";
 import bcrypt from "bcrypt";
 import createNewToken from "../../utils/token";
 
 const UserResolvers = {
   Mutation: {
-    signup: async (_: any, args: SignupArgs) => {
+    signup: async (_: any, args: AuthArgs) => {
       if (!args.email || !args.password) {
         throw new GraphQLError("enter username and password");
       }
@@ -38,13 +38,50 @@ const UserResolvers = {
         console.log("in signup resolver", error);
         throw new GraphQLError("Server error! pls try again later");
       }
-      let token = createNewToken({ userId: newUser._id.toString(), email: newUser.email });
+      let token = createNewToken({
+        userId: newUser._id.toString(),
+        email: newUser.email,
+      });
 
       return {
         userData: {
           email: newUser.email,
           userId: newUser._id,
           username: newUser.username,
+        },
+        token,
+      };
+    },
+  },
+
+  Query: {
+    login: async (_: any, args: AuthArgs) => {
+      const { email, password: hashedPassword } = args;
+      const searchedUser = await user.findOne({ email });
+      if (!searchedUser) {
+        throw new GraphQLError("Wrong Credentials!");
+      }
+      const passwordIsValid = await bcrypt.compare(
+        args.password,
+        searchedUser.password
+      );
+      if (!passwordIsValid) {
+        throw new GraphQLError("Wrond Credentials!");
+      }
+      let token;
+      try {
+        token = await createNewToken({
+          userId: searchedUser._id.toString(),
+          email: searchedUser.email,
+        });
+      } catch (error) {
+        throw new GraphQLError("Server Error! pls try again later!");
+      }
+      return {
+        userData: {
+          email: searchedUser.email,
+          userId: searchedUser._id,
+          username: searchedUser.username,
         },
         token,
       };

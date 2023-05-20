@@ -50,12 +50,46 @@ const UserResolvers = {
                 console.log("in signup resolver", error);
                 throw new error_1.GraphQLError("Server error! pls try again later");
             }
-            let token = (0, token_1.default)({ userId: newUser._id.toString(), email: newUser.email });
+            let token = (0, token_1.default)({
+                userId: newUser._id.toString(),
+                email: newUser.email,
+            });
             return {
                 userData: {
                     email: newUser.email,
                     userId: newUser._id,
                     username: newUser.username,
+                },
+                token,
+            };
+        }),
+    },
+    Query: {
+        login: (_, args) => __awaiter(void 0, void 0, void 0, function* () {
+            const { email, password: hashedPassword } = args;
+            const searchedUser = yield user_1.default.findOne({ email });
+            if (!searchedUser) {
+                throw new error_1.GraphQLError("Wrong Credentials!");
+            }
+            const passwordIsValid = yield bcrypt_1.default.compare(args.password, searchedUser.password);
+            if (!passwordIsValid) {
+                throw new error_1.GraphQLError("Wrond Credentials!");
+            }
+            let token;
+            try {
+                token = yield (0, token_1.default)({
+                    userId: searchedUser._id.toString(),
+                    email: searchedUser.email,
+                });
+            }
+            catch (error) {
+                throw new error_1.GraphQLError("Server Error! pls try again later!");
+            }
+            return {
+                userData: {
+                    email: searchedUser.email,
+                    userId: searchedUser._id,
+                    username: searchedUser.username,
                 },
                 token,
             };

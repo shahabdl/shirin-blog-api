@@ -4,12 +4,15 @@ const UserTypedefs = `#graphql
         email: String
         userId: ID
     }
-    type SignupResponse {
+    type AuthResponse {
         userData: UserData
         token: String
     }
     type Mutation { 
-        signup(email: String, password: String): SignupResponse
+        signup(email: String, password: String): AuthResponse
+    }
+    type Query {
+        login(email:String, password: String): AuthResponse
     }
 `;
 
