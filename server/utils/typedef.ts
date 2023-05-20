@@ -1,23 +1,21 @@
-import { GraphQLArgs, GraphQLObjectType } from "graphql";
 import mongoose from "mongoose";
 
-export interface Session {
+export interface UserData {
   userId: mongoose.Types.ObjectId;
+  email: string;
 }
-
 export interface GraphQlContext {
-  session: Session;
+  userData: UserData;
 }
-
 enum Difficulty {
-  EASY = 'EASY',
-  MEDIUM = 'MEDIUM',
-  HARD = 'MEDIUM',
+  EASY = "EASY",
+  MEDIUM = "MEDIUM",
+  HARD = "MEDIUM",
 }
 enum Status {
-  PUBLISHED = 'PUBLISHED',
-  DRAFT = 'DRAFT',
-  TRASH = 'TRASH',
+  PUBLISHED = "PUBLISHED",
+  DRAFT = "DRAFT",
+  TRASH = "TRASH",
 }
 export interface RecipeArgs {
   name: String;
@@ -32,4 +30,8 @@ export interface RecipeArgs {
     additional: Number;
   };
   servings: Number;
+}
+export interface SignupArgs {
+  email: string;
+  password: string;
 }

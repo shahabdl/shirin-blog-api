@@ -97,9 +97,10 @@ const likeRecipe = (userId, recipeId) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.likeRecipe = likeRecipe;
-const createRecipe = ({ recipeArgs, session }) => __awaiter(void 0, void 0, void 0, function* () {
+const createRecipe = ({ recipeArgs, userData }) => __awaiter(void 0, void 0, void 0, function* () {
     const { image, title, description, difficulty, timing, servings, status, } = recipeArgs;
     try {
+        console.log(userData);
         const newRecipe = yield recipe_1.default.create({
             title,
             image,

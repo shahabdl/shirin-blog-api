@@ -11,14 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const RecipeResolvers = {
     Query: {
-        Recipes: (_, __) => __awaiter(void 0, void 0, void 0, function* () {
+        Recipes: (_, __, context) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log(context);
             return "test";
         }),
     },
     Mutation: {
-        CreateRecipe: (_, args) => __awaiter(void 0, void 0, void 0, function* () {
+        CreateRecipe: (_, args, context) => __awaiter(void 0, void 0, void 0, function* () {
             return { test: `recipe ${args.name} created` };
-        })
-    }
+        }),
+    },
 };
 exports.default = RecipeResolvers;

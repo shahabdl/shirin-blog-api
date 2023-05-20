@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import recipeModel from "../models/recipe";
 import userModel from "../models/user";
-import { RecipeArgs, Session } from "../../utils/typedef";
+import { RecipeArgs, UserData } from "../../utils/typedef";
 
 interface CreateReciptProps {
   recipeArgs: RecipeArgs;
-  session: Session;
+  userData: UserData;
 }
 
 const getRecipeById = async (id: mongoose.Types.ObjectId) => {
@@ -92,7 +92,7 @@ const likeRecipe = async (
   }
 };
 
-const createRecipe = async ({ recipeArgs, session }: CreateReciptProps) => {
+const createRecipe = async ({ recipeArgs, userData }: CreateReciptProps) => {
   const {
     image,
     title,
@@ -103,6 +103,7 @@ const createRecipe = async ({ recipeArgs, session }: CreateReciptProps) => {
     status,
   } = recipeArgs;
   try {
+    console.log(userData)
     const newRecipe = await recipeModel.create({
       title,
       image,

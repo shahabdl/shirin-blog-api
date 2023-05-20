@@ -7,6 +7,6 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const ConnectToDB = (url) => {
     return mongoose_1.default
         .connect(url)
-        .then(() => console.log(`Connected to DataBase ${url}`));
+        .then(() => console.log(`Connected to DataBase`));
 };
 exports.default = ConnectToDB;

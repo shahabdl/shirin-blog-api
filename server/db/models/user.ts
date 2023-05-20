@@ -1,8 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
 const UserSchema = new Schema({
-  name: { type: String, required: [true, "user name required"] },
-  image: { type: String, required: [true, "user image required"] },
+  email: {type: String, required: [true, 'need email']},
+  name: { type: String },
+  username: {type: String},
+  image: { type: String },
   signUpAt: { type: Date },
   lastLogin: { type: Date },
   likes: { type: [mongoose.Types.ObjectId], ref: "recipes" },
@@ -11,6 +13,10 @@ const UserSchema = new Schema({
     enum: ["user", "author"],
     required: [true, "user should have role"],
   },
+  password: {
+    type: String,
+    requried: true
+  }
 });
 
 export default mongoose.model("users", UserSchema);
