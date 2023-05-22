@@ -27,21 +27,21 @@ const RecipeResolvers = {
     Mutation: {
         CreateRecipe: (_, args, context) => __awaiter(void 0, void 0, void 0, function* () {
             if (!context.userData || !context.userData.userId) {
-                throw new graphql_1.GraphQLError(errors_1.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
             }
             const { userId, email } = context.userData;
             if (!mongoose_1.default.isValidObjectId(userId)) {
-                throw new graphql_1.GraphQLError(errors_1.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
             }
             const requestingUser = yield user_1.default.findById(userId);
             if (!requestingUser) {
-                throw new graphql_1.GraphQLError(errors_1.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
             }
             if (requestingUser.email !== email) {
-                throw new graphql_1.GraphQLError(errors_1.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
             }
             if (requestingUser.role !== "author") {
-                throw new graphql_1.GraphQLError(errors_1.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
             }
             const recipeData = args.recipeData;
             const newRecipe = yield recipe_1.default.create({
