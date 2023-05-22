@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_1 = require("graphql");
 const user_1 = __importDefault(require("../../db/models/user"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const errors_1 = require("../../consts/errors");
+const errors_1 = require("../../output_texts/errors");
 const recipe_1 = __importDefault(require("../../db/models/recipe"));
 const RecipeResolvers = {
     Query: {
