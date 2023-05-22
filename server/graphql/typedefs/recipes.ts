@@ -1,12 +1,46 @@
 const RecipeTypeDefs = `#graphql
     type CreateRecipeResponse {
-        test: String
+        title:String,
+        author: String,
+        description: String,
+    }
+    enum Difficulty{
+        EASY
+        MEDIUM
+        HARD
+    }
+    enum PublishStatus{
+        PUBLISHED
+        DRAFT
+        TRASH
     }
     type Query {
         Recipes: String
     }
-    type Mutation{
-        CreateRecipe(name:String) : CreateRecipeResponse
+    input Ingredients{
+        name: String
+        quantity: Int
     }
-`
-export default RecipeTypeDefs
+    input Timing{
+        preperation: Int
+        cookTime: Int
+        additional: Int
+    }
+    input CreateRecipeArgs{
+        name: String
+        title: String
+        description:String
+        difficulty: Difficulty
+        ingredients: [Ingredients]
+        categories: [ID]
+        steps: [String]
+        status: PublishStatus
+        image: String
+        timing: Timing
+        servings: Int
+    }
+    type Mutation{
+        CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
+    }
+`;
+export default RecipeTypeDefs;

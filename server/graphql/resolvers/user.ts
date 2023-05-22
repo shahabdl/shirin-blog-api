@@ -86,6 +86,7 @@ const UserResolvers = {
         token,
       };
     },
+    
   },
 };
 

@@ -8,12 +8,13 @@ const UserSchema = new Schema({
   image: { type: String },
   signUpAt: { type: Date },
   lastLogin: { type: Date },
-  likes: { type: [mongoose.Types.ObjectId], ref: "recipes" },
+  likes: { type: [Schema.Types.ObjectId], ref: "recipe" },
   role: {
     type: String,
     enum: ["user", "author"],
     required: [true, "user should have role"],
   },
+  recipes: {type: [Schema.Types.ObjectId], ref: "recipe"}
 });
 
 export default mongoose.model("users", UserSchema);

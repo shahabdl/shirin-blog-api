@@ -17,19 +17,29 @@ enum Status {
   DRAFT = "DRAFT",
   TRASH = "TRASH",
 }
-export interface RecipeArgs {
-  name: String;
-  image: String;
-  title: String;
-  description: String;
-  difficulty: Difficulty;
-  status: Status;
-  timing: {
-    preperation: Number;
-    cookTime: Number;
-    additional: Number;
+export interface CreateRecipeArgs {
+  recipeData: {
+    name: String;
+    title: String;
+    description: String;
+    difficulty: Difficulty;
+    ingredients: [
+      {
+        name: String;
+        quantity: String;
+      }
+    ];
+    categories: [String];
+    steps: [String];
+    status: Status;
+    image: String;
+    timing: {
+      preperation: Number;
+      cookTime: Number;
+      additional: Number;
+    };
+    servings: Number;
   };
-  servings: Number;
 }
 export interface AuthArgs {
   email: string;

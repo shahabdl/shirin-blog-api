@@ -7,7 +7,6 @@ const session = (req: Request, res: Response, next: NextFunction) => {
   req.userData = { userId: null, email: null };
 
   let token = req.headers.authorization?.split(" ")[1];
-
   if (token === "" || token === undefined || token === null) {
     return next();
   }

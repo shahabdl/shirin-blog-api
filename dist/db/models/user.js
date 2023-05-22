@@ -32,11 +32,12 @@ const UserSchema = new mongoose_1.Schema({
     image: { type: String },
     signUpAt: { type: Date },
     lastLogin: { type: Date },
-    likes: { type: [mongoose_1.default.Types.ObjectId], ref: "recipes" },
+    likes: { type: [mongoose_1.Schema.Types.ObjectId], ref: "recipe" },
     role: {
         type: String,
         enum: ["user", "author"],
         required: [true, "user should have role"],
     },
+    recipes: { type: [mongoose_1.Schema.Types.ObjectId], ref: "recipe" }
 });
 exports.default = mongoose_1.default.model("users", UserSchema);

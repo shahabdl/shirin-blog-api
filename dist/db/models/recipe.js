@@ -47,23 +47,24 @@ const IngredientSchema = new mongoose_1.Schema({
     quantity: { type: String, required: [true, "quantity required"] },
 });
 const RecipeSchema = new mongoose_1.Schema({
+    name: { type: String, required: [true, "recipe require name!"] },
     title: { type: String, required: [true, "title required"] },
     creationDate: { type: Date, default: Date.now },
     updateDate: { type: Date, default: Date.now },
-    image: { type: String, required: [true, "image required"] },
-    description: { type: String, required: [true, "description required"] },
-    timing: { type: TimingSchema, required: [true, "timing required"] },
-    servings: { type: Number, required: [true, "servings required"] },
+    image: { type: String },
+    description: { type: String },
+    timing: { type: TimingSchema },
+    servings: { type: Number },
     difficulty: {
         type: String,
-        required: [true, "difficulty required"],
         enum: ["EASY", "MEDIUM", "HARD"],
     },
     status: { type: String, enum: ["PUBLISHED", "DRAFT", "TRASH"] },
-    author: { type: mongoose_1.default.Types.ObjectId, ref: 'user' },
+    author: { type: mongoose_1.default.Types.ObjectId, ref: "user" },
     likes: { type: LikesSchema, required: [true, "like required"] },
     ingredients: [{ type: IngredientSchema }],
     steps: { type: [String] },
-    comments: { type: [mongoose_1.default.Types.ObjectId], ref: 'comment' },
+    comments: { type: [mongoose_1.Schema.Types.ObjectId], ref: "comment" },
+    categories: { type: [String] },
 });
 exports.default = mongoose_1.default.model("recipes", RecipeSchema);
