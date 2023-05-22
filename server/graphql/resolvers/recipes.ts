@@ -4,6 +4,7 @@ import user from "../../db/models/user";
 import mongoose from "mongoose";
 import { EN } from "../../output_texts/errors";
 import recipe from "../../db/models/recipe";
+import getText from "../../output_texts/get-output";
 
 const RecipeResolvers = {
   Query: {
@@ -21,21 +22,21 @@ const RecipeResolvers = {
       context: GraphQlContext
     ) => {
       if (!context.userData || !context.userData.userId) {
-        throw new GraphQLError(EN.Error.NOT_AUTHORIZED_MESSAGE);
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       const { userId, email } = context.userData;
       if (!mongoose.isValidObjectId(userId)) {
-        throw new GraphQLError(EN.Error.NOT_AUTHORIZED_MESSAGE);
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       const requestingUser = await user.findById(userId);
       if (!requestingUser) {
-        throw new GraphQLError(EN.Error.NOT_AUTHORIZED_MESSAGE);
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       if (requestingUser.email !== email) {
-        throw new GraphQLError(EN.Error.NOT_AUTHORIZED_MESSAGE);
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       if (requestingUser.role !== "author") {
-        throw new GraphQLError(EN.Error.NOT_AUTHORIZED_MESSAGE);
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       const recipeData = args.recipeData;
       const newRecipe = await recipe.create({

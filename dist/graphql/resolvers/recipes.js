@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_1 = require("graphql");
 const user_1 = __importDefault(require("../../db/models/user"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const errors_1 = require("../../output_texts/errors");
 const recipe_1 = __importDefault(require("../../db/models/recipe"));
+const get_output_1 = __importDefault(require("../../output_texts/get-output"));
 const RecipeResolvers = {
     Query: {
         Recipes: (_, __, context) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,21 +27,21 @@ const RecipeResolvers = {
     Mutation: {
         CreateRecipe: (_, args, context) => __awaiter(void 0, void 0, void 0, function* () {
             if (!context.userData || !context.userData.userId) {
-                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             const { userId, email } = context.userData;
             if (!mongoose_1.default.isValidObjectId(userId)) {
-                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             const requestingUser = yield user_1.default.findById(userId);
             if (!requestingUser) {
-                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             if (requestingUser.email !== email) {
-                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             if (requestingUser.role !== "author") {
-                throw new graphql_1.GraphQLError(errors_1.EN.Error.NOT_AUTHORIZED_MESSAGE);
+                throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             const recipeData = args.recipeData;
             const newRecipe = yield recipe_1.default.create({
