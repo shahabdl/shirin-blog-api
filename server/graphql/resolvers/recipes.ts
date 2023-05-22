@@ -2,7 +2,7 @@ import { GraphQLError } from "graphql";
 import { CreateRecipeArgs, GraphQlContext } from "../../utils/typedef";
 import user from "../../db/models/user";
 import mongoose from "mongoose";
-import { NOT_AUTHORIZED_MESSAGE } from "../../consts/errors";
+import { NOT_AUTHORIZED_MESSAGE } from "../../output_texts/errors";
 import recipe from "../../db/models/recipe";
 
 const RecipeResolvers = {
