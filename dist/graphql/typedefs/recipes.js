@@ -1,11 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const RecipeTypeDefs = `#graphql
-    type CreateRecipeResponse {
-        title:String,
-        author: String,
-        description: String,
-    }
     enum Difficulty{
         EASY
         MEDIUM
@@ -16,14 +11,16 @@ const RecipeTypeDefs = `#graphql
         DRAFT
         TRASH
     }
+    
     type Query {
         Recipes: String
     }
-    input Ingredients{
+
+    input IngredientsInput{
         name: String
         quantity: String
     }
-    input Timing{
+    input TimingInput{
         preperation: Int
         cookTime: Int
         additional: Int
@@ -33,16 +30,48 @@ const RecipeTypeDefs = `#graphql
         title: String
         description:String
         difficulty: Difficulty
-        ingredients: [Ingredients]
+        ingredients: [IngredientsInput]
         categories: [String]
         steps: [String]
         status: PublishStatus
         image: String
-        timing: Timing
+        timing: TimingInput
         servings: Int
+        vip: Boolean
+    }
+
+    type Ingredients{
+        name: String
+        quantity: String
+    }
+    type TimingType{
+        preperation: Int
+        cookTime: Int
+        additional: Int
+    }
+    type Category{
+        id:ID
+        name: String
+    }
+    type CreateRecipeResponse {
+        id: ID
+        name: String
+        title:String
+        author: String
+        description: String
+        difficulty: Difficulty
+        ingredients: [Ingredients]
+        categories: [Category]
+        steps: [String]
+        status: PublishStatus
+        image: String
+        timing: TimingType
+        servings: Int
+        vip: Boolean
     }
     type Mutation{
         CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
     }
+
 `;
 exports.default = RecipeTypeDefs;

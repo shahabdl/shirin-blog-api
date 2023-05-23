@@ -1,5 +1,9 @@
 import { GraphQLError } from "graphql";
-import { CreateRecipeArgs, GraphQlContext } from "../../utils/typedef";
+import {
+  CreateRecipeArgs,
+  GetRecipesArgs,
+  GraphQlContext,
+} from "../../utils/typedef";
 import user from "../../db/models/user";
 import mongoose from "mongoose";
 import recipe from "../../db/models/recipe";
@@ -8,7 +12,7 @@ import category from "../../db/models/categories";
 
 const RecipeResolvers = {
   Query: {
-    Recipes: async (_: any, __: any, context: GraphQlContext) => {
+    Recipes: async (_: any, args: GetRecipesArgs, context: GraphQlContext) => {
       console.log(context);
 
       return "test";
@@ -39,7 +43,6 @@ const RecipeResolvers = {
         throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       const recipeData = args.recipeData;
-      console.log(recipeData)
       let categoriesID = [];
       for (let catIndex in recipeData.categories) {
         let categoryID = await category.findOne({
@@ -55,7 +58,7 @@ const RecipeResolvers = {
         }
         categoriesID.push(categoryID._id);
       }
-      
+
       const newRecipe = await recipe.create({
         name: recipeData.name,
         title: recipeData.title,
@@ -75,6 +78,18 @@ const RecipeResolvers = {
         $push: { recipes: newRecipe._id },
       });
       return newRecipe.toObject();
+    },
+  },
+  CreateRecipeResponse: {
+    categories: async (parent: any, args: any, context: GraphQlContext) => {
+      let categories = [];
+      for (let catIndex in parent.categories) {
+        var categoryData = await category.findById(parent.categories[catIndex]);
+        if (categoryData) {
+          categories.push({ id: categoryData._id, name: categoryData.name });
+        }
+      }
+      return categories;
     },
   },
 };

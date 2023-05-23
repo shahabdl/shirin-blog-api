@@ -20,7 +20,7 @@ const get_output_1 = __importDefault(require("../../output_texts/get-output"));
 const categories_1 = __importDefault(require("../../db/models/categories"));
 const RecipeResolvers = {
     Query: {
-        Recipes: (_, __, context) => __awaiter(void 0, void 0, void 0, function* () {
+        Recipes: (_, args, context) => __awaiter(void 0, void 0, void 0, function* () {
             console.log(context);
             return "test";
         }),
@@ -45,7 +45,6 @@ const RecipeResolvers = {
                 throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             const recipeData = args.recipeData;
-            console.log(recipeData);
             let categoriesID = [];
             for (let catIndex in recipeData.categories) {
                 let categoryID = yield categories_1.default.findOne({
@@ -80,6 +79,18 @@ const RecipeResolvers = {
                 $push: { recipes: newRecipe._id },
             });
             return newRecipe.toObject();
+        }),
+    },
+    CreateRecipeResponse: {
+        categories: (parent, args, context) => __awaiter(void 0, void 0, void 0, function* () {
+            let categories = [];
+            for (let catIndex in parent.categories) {
+                var categoryData = yield categories_1.default.findById(parent.categories[catIndex]);
+                if (categoryData) {
+                    categories.push({ id: categoryData._id, name: categoryData.name });
+                }
+            }
+            return categories;
         }),
     },
 };

@@ -48,3 +48,7 @@ export interface AuthArgs {
   email: string;
   password: string;
 }
+export interface GetRecipesArgs {
+  first: number;
+  offset: number;
+}
