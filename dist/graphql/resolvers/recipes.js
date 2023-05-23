@@ -108,6 +108,7 @@ const RecipeResolvers = {
                 timing: Object.assign({}, recipeData.timing),
                 servings: recipeData.servings,
                 likes: {},
+                vip: recipeData.vip ? true : false,
                 author: userId,
             });
             yield user_1.default.findByIdAndUpdate(userId, {

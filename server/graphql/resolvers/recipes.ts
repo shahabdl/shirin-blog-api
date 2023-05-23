@@ -110,6 +110,7 @@ const RecipeResolvers = {
         timing: { ...recipeData.timing },
         servings: recipeData.servings,
         likes: {},
+        vip: recipeData.vip ? true: false,
         author: userId,
       });
       await user.findByIdAndUpdate(userId, {

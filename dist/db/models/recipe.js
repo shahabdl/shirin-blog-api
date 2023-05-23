@@ -39,7 +39,11 @@ const LikesSchema = new mongoose_1.Schema({
     ],
 }, { _id: false });
 const IngredientSchema = new mongoose_1.Schema({
-    ingredient: { type: mongoose_1.Schema.Types.ObjectId, required: [true, "ingredient name required"], ref: "ingredient" },
+    ingredient: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        required: [true, "ingredient name required"],
+        ref: "ingredient",
+    },
     quantity: { type: String, required: [true, "quantity required"] },
 });
 const RecipeSchema = new mongoose_1.Schema({
@@ -62,5 +66,6 @@ const RecipeSchema = new mongoose_1.Schema({
     steps: { type: [String] },
     comments: { type: [mongoose_1.Schema.Types.ObjectId], ref: "comment" },
     categories: { type: [mongoose_1.Schema.Types.ObjectId], ref: "category" },
+    vip: { type: Boolean },
 });
 exports.default = mongoose_1.default.model("recipes", RecipeSchema);

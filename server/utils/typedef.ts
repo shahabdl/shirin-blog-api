@@ -38,6 +38,7 @@ export interface CreateRecipeArgs {
       cookTime: Number;
       additional: Number;
     };
+    vip: boolean;
     servings: Number;
   };
 }
