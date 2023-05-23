@@ -19,7 +19,7 @@ const RecipeTypeDefs = `#graphql
     }
     input Ingredients{
         name: String
-        quantity: Int
+        quantity: String
     }
     input Timing{
         preperation: Int
@@ -32,7 +32,7 @@ const RecipeTypeDefs = `#graphql
         description:String
         difficulty: Difficulty
         ingredients: [Ingredients]
-        categories: [ID]
+        categories: [String]
         steps: [String]
         status: PublishStatus
         image: String

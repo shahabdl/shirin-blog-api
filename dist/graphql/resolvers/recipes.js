@@ -45,14 +45,21 @@ const RecipeResolvers = {
                 throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             const recipeData = args.recipeData;
+            console.log(recipeData);
             let categoriesID = [];
             for (let catIndex in recipeData.categories) {
                 let categoryID = yield categories_1.default.findOne({
                     name: recipeData.categories[catIndex],
                 });
-                if (categoryID) {
-                    categoriesID.push(categoryID._id);
+                if (!categoryID) {
+                    categoryID = yield categories_1.default.create({
+                        name: recipeData.categories[catIndex],
+                        image: "",
+                        status: "PUBLISHED",
+                        description: "",
+                    });
                 }
+                categoriesID.push(categoryID._id);
             }
             const newRecipe = yield recipe_1.default.create({
                 name: recipeData.name,

@@ -39,15 +39,23 @@ const RecipeResolvers = {
         throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       const recipeData = args.recipeData;
+      console.log(recipeData)
       let categoriesID = [];
       for (let catIndex in recipeData.categories) {
         let categoryID = await category.findOne({
           name: recipeData.categories[catIndex],
         });
-        if (categoryID) {
-          categoriesID.push(categoryID._id);
+        if (!categoryID) {
+          categoryID = await category.create({
+            name: recipeData.categories[catIndex],
+            image: "",
+            status: "PUBLISHED",
+            description: "",
+          });
         }
+        categoriesID.push(categoryID._id);
       }
+      
       const newRecipe = await recipe.create({
         name: recipeData.name,
         title: recipeData.title,
