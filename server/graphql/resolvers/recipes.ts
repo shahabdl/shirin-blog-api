@@ -2,9 +2,9 @@ import { GraphQLError } from "graphql";
 import { CreateRecipeArgs, GraphQlContext } from "../../utils/typedef";
 import user from "../../db/models/user";
 import mongoose from "mongoose";
-import { EN } from "../../output_texts/errors";
 import recipe from "../../db/models/recipe";
 import getText from "../../output_texts/get-output";
+import category from "../../db/models/categories";
 
 const RecipeResolvers = {
   Query: {
@@ -39,13 +39,22 @@ const RecipeResolvers = {
         throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       const recipeData = args.recipeData;
+      let categoriesID = [];
+      for (let catIndex in recipeData.categories) {
+        let categoryID = await category.findOne({
+          name: recipeData.categories[catIndex],
+        });
+        if (categoryID) {
+          categoriesID.push(categoryID._id);
+        }
+      }
       const newRecipe = await recipe.create({
         name: recipeData.name,
         title: recipeData.title,
         description: recipeData.description,
         difficulty: recipeData.difficulty,
         ingredients: [...recipeData.ingredients],
-        categories: [...recipeData.categories],
+        categories: [...categoriesID],
         steps: [...recipeData.steps],
         status: recipeData.status,
         image: recipeData.image,

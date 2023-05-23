@@ -22,12 +22,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const user_1 = __importDefault(require("./user"));
 const TimingSchema = new mongoose_1.Schema({
     preperation: { type: Number, required: [true, "preperation required"] },
     cookTime: { type: Number, required: [true, "cookTime required"] },
@@ -38,7 +34,7 @@ const LikesSchema = new mongoose_1.Schema({
     likedUsers: [
         {
             type: mongoose_1.default.Types.ObjectId,
-            ref: user_1.default,
+            ref: "user",
         },
     ],
 }, { _id: false });
@@ -65,6 +61,6 @@ const RecipeSchema = new mongoose_1.Schema({
     ingredients: [{ type: IngredientSchema }],
     steps: { type: [String] },
     comments: { type: [mongoose_1.Schema.Types.ObjectId], ref: "comment" },
-    categories: { type: [String] },
+    categories: { type: [mongoose_1.Schema.Types.ObjectId], ref: "category" },
 });
 exports.default = mongoose_1.default.model("recipes", RecipeSchema);

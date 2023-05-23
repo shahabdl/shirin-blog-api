@@ -1,12 +1,6 @@
 import mongoose from "mongoose";
 
-export interface UserData {
-  userId: mongoose.Types.ObjectId;
-  email: string;
-}
-export interface GraphQlContext {
-  userData: UserData;
-}
+/** ENUMS */
 enum Difficulty {
   EASY = "EASY",
   MEDIUM = "MEDIUM",
@@ -16,6 +10,11 @@ enum Status {
   PUBLISHED = "PUBLISHED",
   DRAFT = "DRAFT",
   TRASH = "TRASH",
+}
+
+/**TYPES */
+export interface GraphQlContext {
+  userData: UserData;
 }
 export interface CreateRecipeArgs {
   recipeData: {
@@ -40,6 +39,10 @@ export interface CreateRecipeArgs {
     };
     servings: Number;
   };
+}
+export interface UserData {
+  userId: mongoose.Types.ObjectId;
+  email: string;
 }
 export interface AuthArgs {
   email: string;

@@ -17,6 +17,7 @@ const user_1 = __importDefault(require("../../db/models/user"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const recipe_1 = __importDefault(require("../../db/models/recipe"));
 const get_output_1 = __importDefault(require("../../output_texts/get-output"));
+const categories_1 = __importDefault(require("../../db/models/categories"));
 const RecipeResolvers = {
     Query: {
         Recipes: (_, __, context) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,13 +45,22 @@ const RecipeResolvers = {
                 throw new graphql_1.GraphQLError((0, get_output_1.default)("NOT_AUTHORIZED_MESSAGE", "EN"));
             }
             const recipeData = args.recipeData;
+            let categoriesID = [];
+            for (let catIndex in recipeData.categories) {
+                let categoryID = yield categories_1.default.findOne({
+                    name: recipeData.categories[catIndex],
+                });
+                if (categoryID) {
+                    categoriesID.push(categoryID._id);
+                }
+            }
             const newRecipe = yield recipe_1.default.create({
                 name: recipeData.name,
                 title: recipeData.title,
                 description: recipeData.description,
                 difficulty: recipeData.difficulty,
                 ingredients: [...recipeData.ingredients],
-                categories: [...recipeData.categories],
+                categories: [...categoriesID],
                 steps: [...recipeData.steps],
                 status: recipeData.status,
                 image: recipeData.image,

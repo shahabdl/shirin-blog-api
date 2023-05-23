@@ -13,7 +13,7 @@ const LikesSchema = new Schema(
     likedUsers: [
       {
         type: mongoose.Types.ObjectId,
-        ref: userModel,
+        ref: "user",
       },
     ],
   },
@@ -44,7 +44,7 @@ const RecipeSchema = new Schema({
   ingredients: [{ type: IngredientSchema }],
   steps: { type: [String] },
   comments: { type: [Schema.Types.ObjectId], ref: "comment" },
-  categories: { type: [String] },
+  categories: { type: [Schema.Types.ObjectId], ref: "category" },
 });
 
 export default mongoose.model("recipes", RecipeSchema);

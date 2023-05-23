@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/** ENUMS */
 var Difficulty;
 (function (Difficulty) {
     Difficulty["EASY"] = "EASY";
