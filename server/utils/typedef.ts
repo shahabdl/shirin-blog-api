@@ -18,20 +18,21 @@ export interface GraphQlContext {
 }
 export interface CreateRecipeArgs {
   recipeData: {
-    name: String;
-    title: String;
-    description: String;
+    name: string;
+    title: string;
+    description: string;
     difficulty: Difficulty;
     ingredients: [
       {
-        name: String;
-        quantity: String;
+        id?: string;
+        name?: string;
+        quantity: string;
       }
     ];
-    categories: [String];
-    steps: [String];
+    categories: [string];
+    steps: [string];
     status: Status;
-    image: String;
+    image: string;
     timing: {
       preperation: Number;
       cookTime: Number;

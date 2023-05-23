@@ -11,12 +11,13 @@ const RecipeTypeDefs = `#graphql
         DRAFT
         TRASH
     }
-    
+
     type Query {
         Recipes: String
     }
 
     input IngredientsInput{
+        id: String
         name: String
         quantity: String
     }
@@ -41,6 +42,7 @@ const RecipeTypeDefs = `#graphql
     }
 
     type Ingredients{
+        id: ID
         name: String
         quantity: String
     }
