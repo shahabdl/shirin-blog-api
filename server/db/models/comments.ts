@@ -13,5 +13,11 @@ const Comment = new Schema({
   content: { type: String, required: [true, "content is required"] },
   replies: { type: [mongoose.Types.ObjectId], ref: [this] },
 });
-
+Comment.set("toJSON", {
+  transform: (_, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 export default mongoose.model("comment", Comment);

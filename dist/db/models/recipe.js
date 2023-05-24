@@ -41,7 +41,7 @@ const LikesSchema = new mongoose_1.Schema({
 const IngredientSchema = new mongoose_1.Schema({
     ingredient: {
         type: mongoose_1.Schema.Types.ObjectId,
-        required: [true, "ingredient name required"],
+        required: [true, "ingredient is required"],
         ref: "ingredient",
     },
     quantity: { type: String, required: [true, "quantity required"] },
@@ -67,5 +67,12 @@ const RecipeSchema = new mongoose_1.Schema({
     comments: { type: [mongoose_1.Schema.Types.ObjectId], ref: "comment" },
     categories: { type: [mongoose_1.Schema.Types.ObjectId], ref: "category" },
     vip: { type: Boolean },
+});
+RecipeSchema.set("toJSON", {
+    transform: (_, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+    },
 });
 exports.default = mongoose_1.default.model("recipes", RecipeSchema);

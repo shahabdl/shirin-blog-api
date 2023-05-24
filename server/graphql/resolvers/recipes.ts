@@ -110,41 +110,19 @@ const RecipeResolvers = {
         timing: { ...recipeData.timing },
         servings: recipeData.servings,
         likes: {},
-        vip: recipeData.vip ? true: false,
+        vip: recipeData.vip ? true : false,
         author: userId,
       });
       await user.findByIdAndUpdate(userId, {
         $push: { recipes: newRecipe._id },
       });
-      return newRecipe.toObject();
-    },
-  },
-  CreateRecipeResponse: {
-    categories: async (parent: any) => {
-      let categories = [];
-      for (let catIndex in parent.categories) {
-        var categoryData = await category.findById(parent.categories[catIndex]);
-        if (categoryData) {
-          categories.push({ id: categoryData._id, name: categoryData.name });
-        }
-      }
-      return categories;
-    },
-    ingredients: async (parent: any) => {
-      let ingredientList = [];
-      for (let index in parent.ingredients) {
-        const id = parent.ingredients[index].ingredient;
-
-        var ingredientData = await ingredients.findById(id);
-        if (ingredientData) {
-          ingredientList.push({
-            id: id,
-            name: ingredientData.name,
-            quantity: parent.ingredients[index].quantity,
-          });
-        }
-      }
-      return ingredientList;
+      let populatedRecipe = await (
+        await newRecipe.populate({
+          path: "categories",
+        })
+      ).populate({ path: "ingredients", populate: [{ path: "ingredient" }] });
+      
+      return populatedRecipe.toJSON();
     },
   },
 };

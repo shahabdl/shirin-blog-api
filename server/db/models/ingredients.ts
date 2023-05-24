@@ -7,5 +7,11 @@ const Ingredient = new Schema({
   image: { type: String },
   description: { type: String },
 });
-
+Ingredient.set("toJSON", {
+  transform: (_, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 export default mongoose.model("ingredient", Ingredient);

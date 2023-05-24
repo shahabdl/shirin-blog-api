@@ -23,7 +23,7 @@ const LikesSchema = new Schema(
 const IngredientSchema = new Schema({
   ingredient: {
     type: Schema.Types.ObjectId,
-    required: [true, "ingredient name required"],
+    required: [true, "ingredient is required"],
     ref: "ingredient",
   },
   quantity: { type: String, required: [true, "quantity required"] },
@@ -51,5 +51,11 @@ const RecipeSchema = new Schema({
   categories: { type: [Schema.Types.ObjectId], ref: "category" },
   vip: { type: Boolean },
 });
-
+RecipeSchema.set("toJSON", {
+  transform: (_, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 export default mongoose.model("recipes", RecipeSchema);

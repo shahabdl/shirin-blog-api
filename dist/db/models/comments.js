@@ -37,4 +37,11 @@ const Comment = new mongoose_1.Schema({
     content: { type: String, required: [true, "content is required"] },
     replies: { type: [mongoose_1.default.Types.ObjectId], ref: [this] },
 });
+Comment.set("toJSON", {
+    transform: (_, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+    },
+});
 exports.default = mongoose_1.default.model("comment", Comment);

@@ -39,9 +39,14 @@ const RecipeTypeDefs = `#graphql
         vip: Boolean
     }
 
-    type Ingredients{
-        id: ID
+    type Ingredient{
         name: String
+        id: ID
+        description: String
+        image: String
+    }
+    type QuantisedIngredient{
+        ingredient: Ingredient
         quantity: String
     }
     type TimingType{
@@ -60,7 +65,7 @@ const RecipeTypeDefs = `#graphql
         author: String
         description: String
         difficulty: Difficulty
-        ingredients: [Ingredients]
+        ingredients: [QuantisedIngredient]
         categories: [Category]
         steps: [String]
         status: PublishStatus

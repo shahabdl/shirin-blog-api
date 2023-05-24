@@ -8,5 +8,11 @@ const Category = new Schema({
   description: { type: String },
   status: { type: String, enum: ["PUBLISHED", "DRAFT", "TRASH"] },
 });
-
+Category.set("toJSON", {
+  transform: (_, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 export default mongoose.model("category",Category);

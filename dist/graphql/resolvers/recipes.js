@@ -114,34 +114,10 @@ const RecipeResolvers = {
             yield user_1.default.findByIdAndUpdate(userId, {
                 $push: { recipes: newRecipe._id },
             });
-            return newRecipe.toObject();
-        }),
-    },
-    CreateRecipeResponse: {
-        categories: (parent) => __awaiter(void 0, void 0, void 0, function* () {
-            let categories = [];
-            for (let catIndex in parent.categories) {
-                var categoryData = yield categories_1.default.findById(parent.categories[catIndex]);
-                if (categoryData) {
-                    categories.push({ id: categoryData._id, name: categoryData.name });
-                }
-            }
-            return categories;
-        }),
-        ingredients: (parent) => __awaiter(void 0, void 0, void 0, function* () {
-            let ingredientList = [];
-            for (let index in parent.ingredients) {
-                const id = parent.ingredients[index].ingredient;
-                var ingredientData = yield ingredients_1.default.findById(id);
-                if (ingredientData) {
-                    ingredientList.push({
-                        id: id,
-                        name: ingredientData.name,
-                        quantity: parent.ingredients[index].quantity,
-                    });
-                }
-            }
-            return ingredientList;
+            let populatedRecipe = yield (yield newRecipe.populate({
+                path: "categories",
+            })).populate({ path: "ingredients", populate: [{ path: "ingredient" }] });
+            return populatedRecipe.toJSON();
         }),
     },
 };
