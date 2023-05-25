@@ -13,7 +13,10 @@ const RecipeTypeDefs = `#graphql
     type Query {
         Recipes: String
     }
-
+    type Mutation{
+        CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
+    }
+    
     input IngredientsInput{
         id: String
         name: String
@@ -67,6 +70,7 @@ const RecipeTypeDefs = `#graphql
         difficulty: Difficulty
         ingredients: [QuantisedIngredient]
         categories: [Category]
+        comments: [Comment]
         steps: [String]
         status: PublishStatus
         image: String
@@ -74,9 +78,7 @@ const RecipeTypeDefs = `#graphql
         servings: Int
         vip: Boolean
     }
-    type Mutation{
-        CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
-    }
+
 
 `;
 export default RecipeTypeDefs;

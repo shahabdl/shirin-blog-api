@@ -54,3 +54,11 @@ export interface GetRecipesArgs {
   first: number;
   offset: number;
 }
+export interface CreateCommentArgs {
+  createCommentArgs: {
+    recipe: mongoose.Types.ObjectId;
+    title: mongoose.Types.ObjectId;
+    content: string;
+    parent: mongoose.Types.ObjectId;
+  };
+}

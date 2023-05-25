@@ -40,4 +40,11 @@ const UserSchema = new mongoose_1.Schema({
     },
     recipes: { type: [mongoose_1.Schema.Types.ObjectId], ref: "recipe" }
 });
-exports.default = mongoose_1.default.model("users", UserSchema);
+UserSchema.set("toJSON", {
+    transform: (_, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+    },
+});
+exports.default = mongoose_1.default.model("user", UserSchema);

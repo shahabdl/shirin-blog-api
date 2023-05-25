@@ -1,4 +1,4 @@
-import { GraphQLError, graphql } from "graphql";
+import { GraphQLError } from "graphql";
 import {
   CreateRecipeArgs,
   GetRecipesArgs,
@@ -116,12 +116,10 @@ const RecipeResolvers = {
       await user.findByIdAndUpdate(userId, {
         $push: { recipes: newRecipe._id },
       });
-      let populatedRecipe = await (
-        await newRecipe.populate({
-          path: "categories",
-        })
-      ).populate({ path: "ingredients", populate: [{ path: "ingredient" }] });
-      
+      let populatedRecipe = await newRecipe.populate(
+        "categories ingredients.ingredient comments"
+      );
+
       return populatedRecipe.toJSON();
     },
   },

@@ -114,9 +114,7 @@ const RecipeResolvers = {
             yield user_1.default.findByIdAndUpdate(userId, {
                 $push: { recipes: newRecipe._id },
             });
-            let populatedRecipe = yield (yield newRecipe.populate({
-                path: "categories",
-            })).populate({ path: "ingredients", populate: [{ path: "ingredient" }] });
+            let populatedRecipe = yield newRecipe.populate("categories ingredients.ingredient comments");
             return populatedRecipe.toJSON();
         }),
     },

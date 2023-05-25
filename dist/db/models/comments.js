@@ -25,17 +25,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const Comment = new mongoose_1.Schema({
-    author: { type: mongoose_1.default.Types.ObjectId, required: [true, "author is required"], ref: 'user' },
+    author: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        required: [true, "author is required"],
+        ref: "user",
+    },
     recipe: {
-        type: mongoose_1.default.Types.ObjectId,
-        required: [true, "recipe is required"],
-        ref: "recipe",
+        type: mongoose_1.Schema.Types.ObjectId,
     },
     creationDate: { type: Date, default: Date.now },
     updateDate: { type: Date, default: Date.now },
     title: { type: String, required: [true, "title is required"] },
     content: { type: String, required: [true, "content is required"] },
-    replies: { type: [mongoose_1.default.Types.ObjectId], ref: [this] },
+    replies: { type: [mongoose_1.Schema.Types.ObjectId], ref: "comment" },
+    replyCount: { type: Number },
+    parent: { type: mongoose_1.Schema.Types.ObjectId, ref: "comment" },
 });
 Comment.set("toJSON", {
     transform: (_, ret) => {

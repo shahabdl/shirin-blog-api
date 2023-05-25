@@ -58,4 +58,4 @@ RecipeSchema.set("toJSON", {
     delete ret.__v;
   },
 });
-export default mongoose.model("recipes", RecipeSchema);
+export default mongoose.model("recipe", RecipeSchema);

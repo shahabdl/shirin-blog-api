@@ -2,7 +2,7 @@ const UserTypedefs = `#graphql
     type UserData {
         username: String
         email: String
-        userId: ID
+        id: ID
     }
     type AuthResponse {
         userData: UserData
