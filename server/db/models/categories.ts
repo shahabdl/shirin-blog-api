@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const Category = new Schema({
+  author: { type: Schema.Types.ObjectId, ref: "user" },
   name: { type: String, required: [true, "category requires a name"] },
   creationDate: { type: Date, default: Date.now },
   updateDate: { type: Date, default: Date.now },
@@ -15,4 +16,4 @@ Category.set("toJSON", {
     delete ret.__v;
   },
 });
-export default mongoose.model("category",Category);
+export default mongoose.model("category", Category);

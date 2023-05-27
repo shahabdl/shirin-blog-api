@@ -53,6 +53,7 @@ const RecipeResolvers = {
                 });
                 if (!categoryID) {
                     categoryID = yield categories_1.default.create({
+                        author: userId,
                         name: recipeData.categories[catIndex],
                         image: "",
                         status: "PUBLISHED",
@@ -81,6 +82,7 @@ const RecipeResolvers = {
                     }
                     try {
                         ingredient = yield ingredients_1.default.create({
+                            author: userId,
                             name,
                             image: "",
                             description: "",
@@ -114,7 +116,13 @@ const RecipeResolvers = {
             yield user_1.default.findByIdAndUpdate(userId, {
                 $push: { recipes: newRecipe._id },
             });
-            let populatedRecipe = yield newRecipe.populate("categories ingredients.ingredient comments");
+            let populatedRecipe = yield newRecipe.populate([
+                { path: "categories", populate: { path: "author" } },
+                { path: "ingredients.ingredient", populate: { path: "author" } },
+                { path: "comments" },
+                { path: "author" },
+            ]);
+            console.log(populatedRecipe.toJSON().categories[0]);
             return populatedRecipe.toJSON();
         }),
     },

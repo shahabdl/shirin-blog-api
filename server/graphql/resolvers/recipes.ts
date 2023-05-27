@@ -53,6 +53,7 @@ const RecipeResolvers = {
         });
         if (!categoryID) {
           categoryID = await category.create({
+            author: userId,
             name: recipeData.categories[catIndex],
             image: "",
             status: "PUBLISHED",
@@ -83,6 +84,7 @@ const RecipeResolvers = {
           }
           try {
             ingredient = await ingredients.create({
+              author: userId,
               name,
               image: "",
               description: "",
@@ -116,10 +118,14 @@ const RecipeResolvers = {
       await user.findByIdAndUpdate(userId, {
         $push: { recipes: newRecipe._id },
       });
-      let populatedRecipe = await newRecipe.populate(
-        "categories ingredients.ingredient comments"
-      );
 
+      let populatedRecipe = await newRecipe.populate([
+        { path: "categories", populate: { path: "author" } },
+        { path: "ingredients.ingredient", populate: { path: "author" } },
+        { path: "comments" },
+        { path: "author" },
+      ]);
+      console.log(populatedRecipe.toJSON().categories[0]);
       return populatedRecipe.toJSON();
     },
   },

@@ -60,7 +60,7 @@ const RecipeSchema = new mongoose_1.Schema({
         enum: ["EASY", "MEDIUM", "HARD"],
     },
     status: { type: String, enum: ["PUBLISHED", "DRAFT", "TRASH"] },
-    author: { type: mongoose_1.default.Types.ObjectId, ref: "user" },
+    author: { type: mongoose_1.Schema.Types.ObjectId, ref: "user" },
     likes: { type: LikesSchema, required: [true, "like required"] },
     ingredients: { type: [IngredientSchema] },
     steps: { type: [String] },

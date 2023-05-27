@@ -19,7 +19,6 @@ const UserSchema = new Schema({
 UserSchema.set("toJSON", {
   transform: (_, ret) => {
     ret.id = ret._id;
-    delete ret._id;
     delete ret.__v;
   },
 });

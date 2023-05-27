@@ -43,6 +43,7 @@ const RecipeTypeDefs = `#graphql
     }
 
     type Ingredient{
+        author: UserData
         name: String
         id: ID
         description: String
@@ -58,14 +59,15 @@ const RecipeTypeDefs = `#graphql
         additional: Int
     }
     type Category{
-        id:ID
+        author: UserData
+        id: ID
         name: String
     }
     type CreateRecipeResponse {
         id: ID
         name: String
         title:String
-        author: String
+        author: UserData
         description: String
         difficulty: Difficulty
         ingredients: [QuantisedIngredient]
