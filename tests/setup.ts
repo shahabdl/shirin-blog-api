@@ -4,9 +4,9 @@ import { connectToDb } from "./utils/db";
 mongoose.Promise = global.Promise;
 
 const setupTest = async () => {
-  await connectToDb()
+  await connectToDb();
+
   return;
 };
-
 
 export default setupTest;

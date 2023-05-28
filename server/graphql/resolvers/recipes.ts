@@ -15,7 +15,6 @@ const RecipeResolvers = {
   Query: {
     Recipes: async (_: any, args: GetRecipesArgs, context: GraphQlContext) => {
       console.log(context);
-
       return "test";
     },
   },
