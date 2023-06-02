@@ -2,10 +2,13 @@
   "name": "shirin-blog-api",
   "version": "1.0.0",
   "description": "SHIRIN BLOG API SERVER with nodejs express and mongodb graphql",
-  "main": "dist/index.js",
+  "main": "dist/server/index.js",
   "jest": {
     "setupFilesAfterEnv": [
-      "<rootDir>/tests/setup.ts"
+      "<rootDir>/dist/tests/setup.js"
+    ],
+    "modulePathIgnorePatterns":[
+      "<rootDir>/tests"
     ]
   },
   "scripts": {

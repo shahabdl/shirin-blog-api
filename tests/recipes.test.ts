@@ -7,6 +7,9 @@ import {
   CreateRecipeResult,
   createRecipeMutation,
   createReciptMutationVariables,
+  queryGetRecipes,
+  queryGetRecipesResult,
+  queryGetRecipesVariables,
 } from "./queries/recipe";
 import assert from "assert";
 import mongoose from "mongoose";
@@ -36,7 +39,7 @@ test("server should prevent creating recipe when user is not author", async () =
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
-      variables: createReciptMutationVariables,
+      variables: createReciptMutationVariables(),
     },
     {
       contextValue: {
@@ -56,7 +59,7 @@ test("server should prevent creating recipe when userId is not valid", async () 
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
-      variables: createReciptMutationVariables,
+      variables: createReciptMutationVariables(),
     },
     {
       contextValue: {
@@ -76,7 +79,7 @@ test("api should create new recipe, categories and ingredients with current user
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
-      variables: createReciptMutationVariables,
+      variables: createReciptMutationVariables(),
     },
     {
       contextValue: {
@@ -103,3 +106,43 @@ test("api should create new recipe, categories and ingredients with current user
   );
   return;
 });
+
+test("getRecipes resolver should return first n recipes with offset of m", async () => {
+  const authorUser = await createUser("author");
+  const testUser = await createUser("user");
+
+  for (let i = 0; i < 10; i++) {
+    let recipeVariables = createReciptMutationVariables({
+      name: `Recipe_${i}`,
+      image: `Recipe_${i}_Image.jpg`,
+    });
+    await server.executeOperation(
+      {
+        query: createRecipeMutation,
+        variables: recipeVariables,
+      },
+      {
+        contextValue: {
+          userData: { userId: authorUser._id, email: authorUser.email },
+        },
+      }
+    );
+  }
+
+  const response = await server.executeOperation(
+    {
+      query: queryGetRecipes,
+      variables: queryGetRecipesVariables,
+    },
+    {
+      contextValue: {
+        userData: { userId: testUser._id, email: testUser.email },
+      },
+    }
+  );
+
+  assert(response.body.kind === "single");
+  expect(response.body.singleResult.data?.Recipes).toMatchObject(
+    queryGetRecipesResult
+  );
+}, 30000);

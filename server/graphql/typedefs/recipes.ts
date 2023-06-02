@@ -10,8 +10,26 @@ const RecipeTypeDefs = `#graphql
         TRASH
     }
 
+    type getRecipesResult {
+        id: ID
+        name: String
+        title:String
+        author: UserData
+        description: String
+        difficulty: Difficulty
+        ingredients: [QuantisedIngredient]
+        categories: [Category]
+        comments: [Comment]
+        steps: [String]
+        status: PublishStatus
+        image: String
+        timing: TimingType
+        servings: Int
+        vip: Boolean
+    }
+
     type Query {
-        Recipes: String
+        Recipes(first: Int, offset: Int): [getRecipesResult]
     }
     type Mutation{
         CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
@@ -80,7 +98,5 @@ const RecipeTypeDefs = `#graphql
         servings: Int
         vip: Boolean
     }
-
-
 `;
 export default RecipeTypeDefs;

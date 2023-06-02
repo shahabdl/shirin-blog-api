@@ -14,8 +14,15 @@ import ingredients from "../../db/models/ingredients";
 const RecipeResolvers = {
   Query: {
     Recipes: async (_: any, args: GetRecipesArgs, context: GraphQlContext) => {
-      console.log(context);
-      return "test";
+      const objectOffset = args.offset * args.first;
+      const foundRecipes = await recipe.find().skip(objectOffset).limit(args.first);
+      // const populatedRecipes = await foundRecipes.populate([
+      //   { path: "categories", populate: { path: "author" } },
+      //   { path: "ingredients.ingredient", populate: { path: "author" } },
+      //   { path: "comments" },
+      //   { path: "author" },
+      // ]);
+      return foundRecipes;
     },
   },
 
@@ -124,7 +131,6 @@ const RecipeResolvers = {
         { path: "comments" },
         { path: "author" },
       ]);
-      console.log(populatedRecipe.toJSON().categories[0]);
       return populatedRecipe.toJSON();
     },
   },
