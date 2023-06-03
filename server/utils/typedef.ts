@@ -56,6 +56,11 @@ export interface GetRecipesArgs {
   first: number;
   offset: number;
 }
+export interface GetRecipesByCatArgs {
+  category: string;
+  first: number;
+  offset: number;
+}
 export interface CreateCommentArgs {
   createCommentArgs: {
     recipe: mongoose.Types.ObjectId;

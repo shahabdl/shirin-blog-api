@@ -2,6 +2,7 @@ import { GraphQLError, graphql } from "graphql";
 import {
   CreateRecipeArgs,
   GetRecipesArgs,
+  GetRecipesByCatArgs,
   GetSingleRecipeByIdArgs,
   GraphQlContext,
 } from "../../utils/typedef";
@@ -15,10 +16,9 @@ import ingredients from "../../db/models/ingredients";
 const RecipeResolvers = {
   Query: {
     Recipes: async (_: any, args: GetRecipesArgs, context: GraphQlContext) => {
-      const objectOffset = args.offset * args.first;
       const foundRecipes = await recipe
         .find()
-        .skip(objectOffset)
+        .skip(args.offset)
         .limit(args.first);
       // const populatedRecipes = await foundRecipes.populate([
       //   { path: "categories", populate: { path: "author" } },
@@ -28,6 +28,7 @@ const RecipeResolvers = {
       // ]);
       return foundRecipes;
     },
+
     getSingleRecipeById: async (
       _: any,
       args: GetSingleRecipeByIdArgs,
@@ -38,9 +39,11 @@ const RecipeResolvers = {
         throw new GraphQLError("Recipe was not found!");
       }
       if (foundRecipe.vip) {
-        if(context.userData.role !== "Author"){
-          if(!context.userData.isVIP){
-            throw new GraphQLError("You are not authorized to access this recipe!");
+        if (context.userData.role !== "Author") {
+          if (!context.userData.isVIP) {
+            throw new GraphQLError(
+              "You are not authorized to access this recipe!"
+            );
           }
         }
       }
@@ -51,6 +54,38 @@ const RecipeResolvers = {
         { path: "author" },
       ]);
       return foundRecipe.toJSON();
+    },
+
+    getRecipesByCategory: async (
+      _: any,
+      args: GetRecipesByCatArgs,
+      context: GraphQlContext
+    ) => {
+      let foundRecipes;
+      if (context.userData.role !== "Author" && !context.userData.isVIP) {
+        foundRecipes = await recipe
+          .find()
+          .where("categories")
+          .equals(args.category)
+          .where("vip")
+          .equals(false)
+          .skip(args.offset)
+          .limit(args.first);
+        const VIPRecipes = await recipe
+          .find()
+          .where("vip")
+          .equals(true)
+          .select(["name", "tite", "image", "description"]);
+        let filteredRecipes = [...foundRecipes, ...VIPRecipes];
+        return filteredRecipes;
+      } else {
+        foundRecipes = await recipe
+          .where("categories")
+          .equals(args.category)
+          .skip(args.offset)
+          .limit(args.first);
+        return foundRecipes;
+      }
     },
   },
 

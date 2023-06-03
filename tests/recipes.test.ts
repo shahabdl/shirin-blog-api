@@ -8,8 +8,10 @@ import {
   createRecipeMutation,
   createReciptMutationVariables,
   queryGetRecipes,
+  queryGetRecipesByCategory,
+  queryGetRecipesByCategoryResult,
+  queryGetRecipesByCategoryVIPResult,
   queryGetRecipesResult,
-  queryGetRecipesVariables,
   queryGetSingleRecipeById,
 } from "./queries/recipe";
 import assert from "assert";
@@ -144,7 +146,7 @@ test("getRecipes resolver should return first n recipes with offset of m", async
   const response = await server.executeOperation(
     {
       query: queryGetRecipes,
-      variables: queryGetRecipesVariables,
+      variables: { first: 5, offset: 5 },
     },
     {
       contextValue: {
@@ -188,7 +190,6 @@ test("getSingleRecipeByID resolver should return recipe with id if available", a
     }
   );
   assert(recipe.body.kind === "single");
-  console.log(recipe.body.singleResult.data?.CreateRecipe);
   const response = await server.executeOperation(
     {
       query: queryGetSingleRecipeById,
@@ -207,10 +208,205 @@ test("getSingleRecipeByID resolver should return recipe with id if available", a
   );
 
   assert(response.body.kind === "single");
-  console.log(response.body.singleResult.errors);
   expect(response.body.singleResult.data?.getSingleRecipeById).toMatchObject({
     name: "Recipe_1",
   });
 }, 30000);
 
-test("getSingleRecipeByID should not return VIP Recipes if user is not VIP", async () => {});
+test("getSingleRecipeByID should not return VIP Recipes if user is not VIP or Author", async () => {
+  const authorUser = await createUser("Author");
+  const testUser = await createUser("User");
+
+  const recipeVariables = createReciptMutationVariables({ vip: true });
+  const recipe = await server.executeOperation<
+    Record<"CreateRecipe", { id: string }>
+  >(
+    {
+      query: createRecipeMutation,
+      variables: recipeVariables,
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: authorUser._id,
+          email: authorUser.email,
+          role: authorUser.role,
+          isVIP: testUser.isVIP,
+        },
+      },
+    }
+  );
+  assert(recipe.body.kind === "single");
+
+  const response = await server.executeOperation(
+    {
+      query: queryGetSingleRecipeById,
+      variables: { id: recipe.body.singleResult.data?.CreateRecipe?.id },
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: testUser._id,
+          email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
+        },
+      },
+    }
+  );
+
+  assert(response.body.kind === "single");
+  expect(response.body.singleResult.data?.getSingleRecipeById).toBeNull();
+}, 30000);
+
+test("getRecipesByCategory should return list of recipes of requested category", async () => {
+  const authorUser = await createUser("Author");
+  const testUser = await createUser("User");
+  const recipeVariables = createReciptMutationVariables({
+    name: `Recipe_0`,
+    categories: ["testCat"],
+  });
+
+  const recipe = await server.executeOperation<
+    Record<string, { categories: [{ id: string }] }>
+  >(
+    {
+      query: createRecipeMutation,
+      variables: recipeVariables,
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: authorUser._id,
+          email: authorUser.email,
+          role: authorUser.role,
+          isVIP: testUser.isVIP,
+        },
+      },
+    }
+  );
+  assert(recipe.body.kind === "single");
+  const catID = recipe.body.singleResult.data?.CreateRecipe.categories[0].id;
+
+  for (let i = 1; i < 10; i++) {
+    const recipeVariables = createReciptMutationVariables({
+      name: `Recipe_${i}`,
+      categories: ["testCat"],
+    });
+    await server.executeOperation(
+      {
+        query: createRecipeMutation,
+        variables: recipeVariables,
+      },
+      {
+        contextValue: {
+          userData: {
+            userId: authorUser._id,
+            email: authorUser.email,
+            role: authorUser.role,
+            isVIP: testUser.isVIP,
+          },
+        },
+      }
+    );
+  }
+
+  const response = await server.executeOperation(
+    {
+      query: queryGetRecipesByCategory,
+      variables: { category: catID, first: 5, offset: 2 },
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: testUser._id,
+          email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
+        },
+      },
+    }
+  );
+
+  assert(response.body.kind === "single");
+  expect(response.body.singleResult.data?.getRecipesByCategory).toMatchObject(
+    queryGetRecipesByCategoryResult
+  );
+}, 30000);
+
+test("getRecipesByCategory should not return VIP recipe Data if user is not VIP or Author", async () => {
+  const authorUser = await createUser("Author");
+  const testUser = await createUser("User");
+  const recipeVariables = createReciptMutationVariables({
+    name: `Recipe_0`,
+    categories: ["testCat"],
+    description: "test",
+    vip: true,
+  });
+
+  const recipe = await server.executeOperation<
+    Record<string, { categories: [{ id: string }] }>
+  >(
+    {
+      query: createRecipeMutation,
+      variables: recipeVariables,
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: authorUser._id,
+          email: authorUser.email,
+          role: authorUser.role,
+          isVIP: testUser.isVIP,
+        },
+      },
+    }
+  );
+  assert(recipe.body.kind === "single");
+  const catID = recipe.body.singleResult.data?.CreateRecipe.categories[0].id;
+
+  for (let i = 1; i < 5; i++) {
+    const recipeVariables = createReciptMutationVariables({
+      name: `Recipe_${i}`,
+      categories: ["testCat"],
+    });
+    await server.executeOperation(
+      {
+        query: createRecipeMutation,
+        variables: recipeVariables,
+      },
+      {
+        contextValue: {
+          userData: {
+            userId: authorUser._id,
+            email: authorUser.email,
+            role: authorUser.role,
+            isVIP: testUser.isVIP,
+          },
+        },
+      }
+    );
+  }
+
+  const response = await server.executeOperation(
+    {
+      query: queryGetRecipesByCategory,
+      variables: { category: catID, first: 5, offset: 0 },
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: testUser._id,
+          email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
+        },
+      },
+    }
+  );
+
+  assert(response.body.kind === "single");
+  expect(response.body.singleResult.data?.getRecipesByCategory).toMatchObject(
+    queryGetRecipesByCategoryVIPResult
+  );
+}, 30000);

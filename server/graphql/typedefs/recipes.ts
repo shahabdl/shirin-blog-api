@@ -13,6 +13,7 @@ const RecipeTypeDefs = `#graphql
     type Query {
         Recipes(first: Int, offset: Int): [getRecipesResult]
         getSingleRecipeById(Id: ID): getRecipesResult
+        getRecipesByCategory(category: String, first: Int, offset: Int): [getRecipesResult]
     }
     type Mutation{
         CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse

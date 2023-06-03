@@ -178,10 +178,6 @@ query GetRecipes($first: Int, $offset: Int) {
   }
 }
 `;
-export const queryGetRecipesVariables = {
-  first: 5,
-  offset: 1,
-};
 export const queryGetRecipesResult = [
   { name: "Recipe_5", image: "Recipe_5_Image.jpg" },
   { name: "Recipe_6", image: "Recipe_6_Image.jpg" },
@@ -190,7 +186,7 @@ export const queryGetRecipesResult = [
   { name: "Recipe_9", image: "Recipe_9_Image.jpg" },
 ];
 
-export const queryGetSingleRecipeById= `
+export const queryGetSingleRecipeById = `
 query GetSingleRecipeById($id: ID) {
   getSingleRecipeById(Id: $id) {
     id
@@ -234,4 +230,65 @@ query GetSingleRecipeById($id: ID) {
     vip
   }
 }
-`
+`;
+export const queryGetRecipesByCategory = `
+query GetRecipesByCategory($category: String, $first: Int, $offset: Int) {
+  getRecipesByCategory(category: $category, first: $first, offset: $offset) {
+    id
+    name
+    author {
+      email
+      id
+      username
+    }
+    categories {
+      author {
+        username
+      }
+      id
+      name
+    }
+    description
+    difficulty
+    image
+    ingredients {
+      ingredient {
+        author {
+          username
+        }
+        description
+        image
+        name
+        id
+      }
+      quantity
+    }
+    servings
+    status
+    steps
+    timing {
+      additional
+      cookTime
+      preperation
+    }
+    title
+    vip
+  }
+}
+`;
+
+export const queryGetRecipesByCategoryResult = [
+  { name: "Recipe_2" },
+  { name: "Recipe_3" },
+  { name: "Recipe_4" },
+  { name: "Recipe_5" },
+  { name: "Recipe_6" },
+];
+
+export const queryGetRecipesByCategoryVIPResult = [
+  { name: "Recipe_1", steps: ["step 1", "step 2", "step 3"] },
+  { name: "Recipe_2", steps: ["step 1", "step 2", "step 3"] },
+  { name: "Recipe_3", steps: ["step 1", "step 2", "step 3"] },
+  { name: "Recipe_4", steps: ["step 1", "step 2", "step 3"] },
+  { name: "Recipe_0", steps: null },
+];

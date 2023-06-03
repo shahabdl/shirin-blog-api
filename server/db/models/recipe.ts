@@ -23,7 +23,6 @@ const LikesSchema = new Schema(
 const IngredientSchema = new Schema({
   ingredient: {
     type: Schema.Types.ObjectId,
-    required: [true, "ingredient is required"],
     ref: "ingredient",
   },
   quantity: { type: String, required: [true, "quantity required"] },
@@ -45,7 +44,7 @@ const RecipeSchema = new Schema({
   status: { type: String, enum: ["PUBLISHED", "DRAFT", "TRASH"] },
   author: { type: Schema.Types.ObjectId, ref: "user" },
   likes: { type: LikesSchema, required: [true, "like required"] },
-  ingredients: { type: [IngredientSchema] },
+  ingredients: { type: [IngredientSchema], default: null },
   steps: { type: [String] },
   comments: { type: [Schema.Types.ObjectId], ref: "comment" },
   categories: { type: [Schema.Types.ObjectId], ref: "category" },
