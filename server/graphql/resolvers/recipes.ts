@@ -37,7 +37,6 @@ const RecipeResolvers = {
       if (!foundRecipe) {
         throw new GraphQLError("Recipe was not found!");
       }
-      console.log(context.userData)
       if (foundRecipe.vip) {
         if(context.userData.role !== "Author"){
           if(!context.userData.isVIP){

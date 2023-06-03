@@ -8,14 +8,14 @@ const UserSchema = new Schema({
   image: { type: String },
   signUpAt: { type: Date },
   lastLogin: { type: Date },
-  isVIP: {type: Boolean},
+  isVIP: { type: Boolean, default: false },
   likes: { type: [Schema.Types.ObjectId], ref: "recipe" },
   role: {
     type: String,
     enum: ["User", "Author"],
     required: [true, "user should have role"],
   },
-  recipes: {type: [Schema.Types.ObjectId], ref: "recipe"}
+  recipes: { type: [Schema.Types.ObjectId], ref: "recipe" },
 });
 UserSchema.set("toJSON", {
   transform: (_, ret) => {

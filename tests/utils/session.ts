@@ -1,7 +1,7 @@
 import user from "../../server/db/models/user";
 import createNewToken from "../../server/utils/token";
 
-export const createUser = async (role: "author" | "user") => {
+export const createUser = async (role: "Author" | "User") => {
   const uesrNumber = Math.round(Math.random() * 100);
   const fakeUser = await user.create({
     email: `user_${uesrNumber}@test.com`,
@@ -14,9 +14,9 @@ export const createUser = async (role: "author" | "user") => {
   return fakeUser;
 };
 
-export const createSession = async (role: "author" | "user") => {
+export const createSession = async (role: "Author" | "User") => {
   const testUser = await createUser(role);
-  let token = await createNewToken({
+  let token = createNewToken({
     userId: testUser._id.toString(),
     email: testUser.email,
   });

@@ -36,7 +36,7 @@ afterAll(async () => {
 });
 
 test("server should prevent creating recipe when user is not author", async () => {
-  let testUser = await createUser("user");
+  let testUser = await createUser("User");
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
@@ -48,7 +48,7 @@ test("server should prevent creating recipe when user is not author", async () =
           userId: new mongoose.Types.ObjectId(testUser._id),
           email: testUser.email,
           role: testUser.role,
-          isVIP: false,
+          isVIP: testUser.isVIP,
         },
       },
     }
@@ -58,7 +58,7 @@ test("server should prevent creating recipe when user is not author", async () =
 });
 
 test("server should prevent creating recipe when userId is not valid", async () => {
-  let testUser = await createUser("user");
+  let testUser = await createUser("User");
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
@@ -70,7 +70,7 @@ test("server should prevent creating recipe when userId is not valid", async () 
           userId: new mongoose.Types.ObjectId(),
           email: testUser.email,
           role: testUser.role,
-          isVIP: false,
+          isVIP: testUser.isVIP,
         },
       },
     }
@@ -80,7 +80,7 @@ test("server should prevent creating recipe when userId is not valid", async () 
 });
 
 test("api should create new recipe, categories and ingredients with current user as author and return them to client", async () => {
-  const { token, testUser } = await createSession("author");
+  const { token, testUser } = await createSession("Author");
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
@@ -92,7 +92,7 @@ test("api should create new recipe, categories and ingredients with current user
           userId: new mongoose.Types.ObjectId(testUser._id),
           email: testUser.email,
           role: testUser.role,
-          isVIP: false,
+          isVIP: testUser.isVIP,
         },
       },
     }
@@ -115,8 +115,8 @@ test("api should create new recipe, categories and ingredients with current user
 });
 
 test("getRecipes resolver should return first n recipes with offset of m", async () => {
-  const authorUser = await createUser("author");
-  const testUser = await createUser("user");
+  const authorUser = await createUser("Author");
+  const testUser = await createUser("User");
 
   for (let i = 0; i < 10; i++) {
     let recipeVariables = createReciptMutationVariables({
@@ -134,7 +134,7 @@ test("getRecipes resolver should return first n recipes with offset of m", async
             userId: authorUser._id,
             email: authorUser.email,
             role: authorUser.role,
-            isVIP: false,
+            isVIP: testUser.isVIP,
           },
         },
       }
@@ -152,7 +152,7 @@ test("getRecipes resolver should return first n recipes with offset of m", async
           userId: testUser._id,
           email: testUser.email,
           role: testUser.role,
-          isVIP: false,
+          isVIP: testUser.isVIP,
         },
       },
     }
@@ -165,8 +165,8 @@ test("getRecipes resolver should return first n recipes with offset of m", async
 }, 30000);
 
 test("getSingleRecipeByID resolver should return recipe with id if available", async () => {
-  const authorUser = await createUser("author");
-  const testUser = await createUser("user");
+  const authorUser = await createUser("Author");
+  const testUser = await createUser("User");
 
   const recipeVariables = createReciptMutationVariables({});
   const recipe = await server.executeOperation<
@@ -182,7 +182,7 @@ test("getSingleRecipeByID resolver should return recipe with id if available", a
           userId: authorUser._id,
           email: authorUser.email,
           role: authorUser.role,
-          isVIP: false,
+          isVIP: testUser.isVIP,
         },
       },
     }
@@ -200,7 +200,7 @@ test("getSingleRecipeByID resolver should return recipe with id if available", a
           userId: testUser._id,
           email: testUser.email,
           role: testUser.role,
-          isVIP: false,
+          isVIP: testUser.isVIP,
         },
       },
     }
