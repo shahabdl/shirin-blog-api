@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import user from "../db/models/user";
 
-const session = (req: Request, res: Response, next: NextFunction) => {
+const session = async (req: Request, res: Response, next: NextFunction) => {
   if (req.method === "OPTIONS") return next();
 
   req.userData = { userId: null, email: null };
@@ -21,8 +22,14 @@ const session = (req: Request, res: Response, next: NextFunction) => {
     console.log(error, "in decoding token in session middleware");
     return next();
   }
+
   if (typeof decodedToken !== "string") {
-    req.userData = { userId: decodedToken.userId, email: decodedToken.email };
+    const reqUser = await user.findById(decodedToken.userId);
+    if(!reqUser){
+      return next();
+    }
+
+    req.userData = { userId: reqUser._id, email: reqUser.email, role: reqUser.role, isVIP: reqUser.isVIP};
   } else {
     return next();
   }

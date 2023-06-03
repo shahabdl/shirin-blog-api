@@ -10,6 +10,14 @@ const RecipeTypeDefs = `#graphql
         TRASH
     }
 
+    type Query {
+        Recipes(first: Int, offset: Int): [getRecipesResult]
+        getSingleRecipeById(Id: ID): getRecipesResult
+    }
+    type Mutation{
+        CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
+    }
+
     type getRecipesResult {
         id: ID
         name: String
@@ -26,13 +34,6 @@ const RecipeTypeDefs = `#graphql
         timing: TimingType
         servings: Int
         vip: Boolean
-    }
-
-    type Query {
-        Recipes(first: Int, offset: Int): [getRecipesResult]
-    }
-    type Mutation{
-        CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
     }
     
     input IngredientsInput{

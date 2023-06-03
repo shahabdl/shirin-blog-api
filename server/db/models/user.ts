@@ -8,10 +8,11 @@ const UserSchema = new Schema({
   image: { type: String },
   signUpAt: { type: Date },
   lastLogin: { type: Date },
+  isVIP: {type: Boolean},
   likes: { type: [Schema.Types.ObjectId], ref: "recipe" },
   role: {
     type: String,
-    enum: ["user", "author"],
+    enum: ["User", "Author"],
     required: [true, "user should have role"],
   },
   recipes: {type: [Schema.Types.ObjectId], ref: "recipe"}

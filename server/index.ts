@@ -40,6 +40,8 @@ const startApi = async () => {
           userData: {
             userId: req.userData.userId || null,
             email: req.userData.email || null,
+            role: req.userData.role || null,
+            isVIP: req.userData.isVIP || null,
           },
         }),
       })

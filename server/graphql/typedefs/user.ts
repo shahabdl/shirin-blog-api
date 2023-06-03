@@ -3,6 +3,7 @@ const UserTypedefs = `#graphql
         username: String
         email: String
         id: ID
+        isVIP: Boolean
     }
     type AuthResponse {
         userData: UserData

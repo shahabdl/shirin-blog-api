@@ -1,7 +1,8 @@
-import { GraphQLError } from "graphql";
+import { GraphQLError, graphql } from "graphql";
 import {
   CreateRecipeArgs,
   GetRecipesArgs,
+  GetSingleRecipeByIdArgs,
   GraphQlContext,
 } from "../../utils/typedef";
 import user from "../../db/models/user";
@@ -15,7 +16,10 @@ const RecipeResolvers = {
   Query: {
     Recipes: async (_: any, args: GetRecipesArgs, context: GraphQlContext) => {
       const objectOffset = args.offset * args.first;
-      const foundRecipes = await recipe.find().skip(objectOffset).limit(args.first);
+      const foundRecipes = await recipe
+        .find()
+        .skip(objectOffset)
+        .limit(args.first);
       // const populatedRecipes = await foundRecipes.populate([
       //   { path: "categories", populate: { path: "author" } },
       //   { path: "ingredients.ingredient", populate: { path: "author" } },
@@ -23,6 +27,31 @@ const RecipeResolvers = {
       //   { path: "author" },
       // ]);
       return foundRecipes;
+    },
+    getSingleRecipeById: async (
+      _: any,
+      args: GetSingleRecipeByIdArgs,
+      context: GraphQlContext
+    ) => {
+      const foundRecipe = await recipe.findById(args.Id);
+      if (!foundRecipe) {
+        throw new GraphQLError("Recipe was not found!");
+      }
+      console.log(context.userData)
+      if (foundRecipe.vip) {
+        if(context.userData.role !== "Author"){
+          if(!context.userData.isVIP){
+            throw new GraphQLError("You are not authorized to access this recipe!");
+          }
+        }
+      }
+      await foundRecipe.populate([
+        { path: "categories", populate: { path: "author" } },
+        { path: "ingredients.ingredient", populate: { path: "author" } },
+        { path: "comments" },
+        { path: "author" },
+      ]);
+      return foundRecipe.toJSON();
     },
   },
 
@@ -39,14 +68,7 @@ const RecipeResolvers = {
       if (!mongoose.isValidObjectId(userId)) {
         throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
-      const requestingUser = await user.findById(userId);
-      if (!requestingUser) {
-        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
-      }
-      if (requestingUser.email !== email) {
-        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
-      }
-      if (requestingUser.role !== "author") {
+      if (context.userData.role !== "Author") {
         throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
 

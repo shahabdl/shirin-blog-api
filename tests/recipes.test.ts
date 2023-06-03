@@ -10,6 +10,7 @@ import {
   queryGetRecipes,
   queryGetRecipesResult,
   queryGetRecipesVariables,
+  queryGetSingleRecipeById,
 } from "./queries/recipe";
 import assert from "assert";
 import mongoose from "mongoose";
@@ -46,6 +47,8 @@ test("server should prevent creating recipe when user is not author", async () =
         userData: {
           userId: new mongoose.Types.ObjectId(testUser._id),
           email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
         },
       },
     }
@@ -66,6 +69,8 @@ test("server should prevent creating recipe when userId is not valid", async () 
         userData: {
           userId: new mongoose.Types.ObjectId(),
           email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
         },
       },
     }
@@ -86,6 +91,8 @@ test("api should create new recipe, categories and ingredients with current user
         userData: {
           userId: new mongoose.Types.ObjectId(testUser._id),
           email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
         },
       },
     }
@@ -123,7 +130,12 @@ test("getRecipes resolver should return first n recipes with offset of m", async
       },
       {
         contextValue: {
-          userData: { userId: authorUser._id, email: authorUser.email },
+          userData: {
+            userId: authorUser._id,
+            email: authorUser.email,
+            role: authorUser.role,
+            isVIP: false,
+          },
         },
       }
     );
@@ -136,7 +148,12 @@ test("getRecipes resolver should return first n recipes with offset of m", async
     },
     {
       contextValue: {
-        userData: { userId: testUser._id, email: testUser.email },
+        userData: {
+          userId: testUser._id,
+          email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
+        },
       },
     }
   );
@@ -146,3 +163,54 @@ test("getRecipes resolver should return first n recipes with offset of m", async
     queryGetRecipesResult
   );
 }, 30000);
+
+test("getSingleRecipeByID resolver should return recipe with id if available", async () => {
+  const authorUser = await createUser("author");
+  const testUser = await createUser("user");
+
+  const recipeVariables = createReciptMutationVariables({});
+  const recipe = await server.executeOperation<
+    Record<"CreateRecipe", { id: string }>
+  >(
+    {
+      query: createRecipeMutation,
+      variables: recipeVariables,
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: authorUser._id,
+          email: authorUser.email,
+          role: authorUser.role,
+          isVIP: false,
+        },
+      },
+    }
+  );
+  assert(recipe.body.kind === "single");
+  console.log(recipe.body.singleResult.data?.CreateRecipe);
+  const response = await server.executeOperation(
+    {
+      query: queryGetSingleRecipeById,
+      variables: { id: recipe.body.singleResult.data?.CreateRecipe?.id },
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: testUser._id,
+          email: testUser.email,
+          role: testUser.role,
+          isVIP: false,
+        },
+      },
+    }
+  );
+
+  assert(response.body.kind === "single");
+  console.log(response.body.singleResult.errors);
+  expect(response.body.singleResult.data?.getSingleRecipeById).toMatchObject({
+    name: "Recipe_1",
+  });
+}, 30000);
+
+test("getSingleRecipeByID should not return VIP Recipes if user is not VIP", async () => {});

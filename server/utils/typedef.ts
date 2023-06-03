@@ -45,6 +45,8 @@ export interface CreateRecipeArgs {
 export interface UserData {
   userId: mongoose.Types.ObjectId;
   email: string;
+  role: "Author" | "User";
+  isVIP: Boolean;
 }
 export interface AuthArgs {
   email: string;
@@ -61,4 +63,8 @@ export interface CreateCommentArgs {
     content: string;
     parent: mongoose.Types.ObjectId;
   };
+}
+
+export interface GetSingleRecipeByIdArgs {
+  Id: string;
 }

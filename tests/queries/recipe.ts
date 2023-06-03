@@ -54,6 +54,7 @@ export const createRecipeMutation = `mutation CreateRecipe($recipeData: CreateRe
             }
         }
     }`;
+
 export const createReciptMutationVariables = (
   options: createRecipeMutationVariablesOptions = {}
 ) => {
@@ -188,3 +189,49 @@ export const queryGetRecipesResult = [
   { name: "Recipe_8", image: "Recipe_8_Image.jpg" },
   { name: "Recipe_9", image: "Recipe_9_Image.jpg" },
 ];
+
+export const queryGetSingleRecipeById= `
+query GetSingleRecipeById($id: ID) {
+  getSingleRecipeById(Id: $id) {
+    id
+    name
+    author {
+      email
+      id
+      username
+    }
+    categories {
+      author {
+        username
+      }
+      id
+      name
+    }
+    description
+    difficulty
+    image
+    ingredients {
+      ingredient {
+        author {
+          username
+        }
+        description
+        image
+        name
+        id
+      }
+      quantity
+    }
+    servings
+    status
+    steps
+    timing {
+      additional
+      cookTime
+      preperation
+    }
+    title
+    vip
+  }
+}
+`
