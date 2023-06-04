@@ -42,6 +42,35 @@ export interface CreateRecipeArgs {
     servings: Number;
   };
 }
+
+export interface UpdateRecipeArgs {
+  id: mongoose.Types.ObjectId;
+  recipeData: {
+    name: string;
+    title: string;
+    description: string;
+    difficulty: Difficulty;
+    ingredients: [
+      {
+        id?: string;
+        name?: string;
+        quantity: string;
+      }
+    ];
+    categories: [string];
+    steps: [string];
+    status: Status;
+    image: string;
+    timing: {
+      preperation: Number;
+      cookTime: Number;
+      additional: Number;
+    };
+    vip: boolean;
+    servings: Number;
+  };
+}
+
 export interface UserData {
   userId: mongoose.Types.ObjectId;
   email: string;

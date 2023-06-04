@@ -6,13 +6,14 @@ import Resolvers from "../server/graphql/resolvers";
 import {
   CreateRecipeResult,
   createRecipeMutation,
-  createReciptMutationVariables,
+  createRecipeMutationVariables,
   queryGetRecipes,
   queryGetRecipesByCategory,
   queryGetRecipesByCategoryResult,
   queryGetRecipesByCategoryVIPResult,
   queryGetRecipesResult,
   queryGetSingleRecipeById,
+  updateRecipeMutation,
 } from "./queries/recipe";
 import assert from "assert";
 import mongoose from "mongoose";
@@ -42,7 +43,7 @@ test("server should prevent creating recipe when user is not author", async () =
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
-      variables: createReciptMutationVariables(),
+      variables: createRecipeMutationVariables(),
     },
     {
       contextValue: {
@@ -64,7 +65,7 @@ test("server should prevent creating recipe when userId is not valid", async () 
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
-      variables: createReciptMutationVariables(),
+      variables: createRecipeMutationVariables(),
     },
     {
       contextValue: {
@@ -86,7 +87,7 @@ test("api should create new recipe, categories and ingredients with current user
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
-      variables: createReciptMutationVariables(),
+      variables: createRecipeMutationVariables(),
     },
     {
       contextValue: {
@@ -121,7 +122,7 @@ test("getRecipes resolver should return first n recipes with offset of m", async
   const testUser = await createUser("User");
 
   for (let i = 0; i < 10; i++) {
-    let recipeVariables = createReciptMutationVariables({
+    let recipeVariables = createRecipeMutationVariables({
       name: `Recipe_${i}`,
       image: `Recipe_${i}_Image.jpg`,
     });
@@ -170,7 +171,7 @@ test("getSingleRecipeByID resolver should return recipe with id if available", a
   const authorUser = await createUser("Author");
   const testUser = await createUser("User");
 
-  const recipeVariables = createReciptMutationVariables({});
+  const recipeVariables = createRecipeMutationVariables({});
   const recipe = await server.executeOperation<
     Record<"CreateRecipe", { id: string }>
   >(
@@ -213,11 +214,11 @@ test("getSingleRecipeByID resolver should return recipe with id if available", a
   });
 }, 30000);
 
-test("getSingleRecipeByID should not return VIP Recipes if user is not VIP or Author", async () => {
+test("getSingleRecipeByID should not return some fields VIP Recipes if user is not VIP or Author", async () => {
   const authorUser = await createUser("Author");
   const testUser = await createUser("User");
 
-  const recipeVariables = createReciptMutationVariables({ vip: true });
+  const recipeVariables = createRecipeMutationVariables({ vip: true });
   const recipe = await server.executeOperation<
     Record<"CreateRecipe", { id: string }>
   >(
@@ -262,7 +263,7 @@ test("getSingleRecipeByID should not return VIP Recipes if user is not VIP or Au
 test("getRecipesByCategory should return list of recipes of requested category", async () => {
   const authorUser = await createUser("Author");
   const testUser = await createUser("User");
-  const recipeVariables = createReciptMutationVariables({
+  const recipeVariables = createRecipeMutationVariables({
     name: `Recipe_0`,
     categories: ["testCat"],
   });
@@ -289,7 +290,7 @@ test("getRecipesByCategory should return list of recipes of requested category",
   const catID = recipe.body.singleResult.data?.CreateRecipe.categories[0].id;
 
   for (let i = 1; i < 10; i++) {
-    const recipeVariables = createReciptMutationVariables({
+    const recipeVariables = createRecipeMutationVariables({
       name: `Recipe_${i}`,
       categories: ["testCat"],
     });
@@ -334,10 +335,10 @@ test("getRecipesByCategory should return list of recipes of requested category",
   );
 }, 30000);
 
-test("getRecipesByCategory should not return VIP recipe Data if user is not VIP or Author", async () => {
+test("getRecipesByCategory should not return some VIP recipe Data if user is not VIP or Author", async () => {
   const authorUser = await createUser("Author");
   const testUser = await createUser("User");
-  const recipeVariables = createReciptMutationVariables({
+  const recipeVariables = createRecipeMutationVariables({
     name: `Recipe_0`,
     categories: ["testCat"],
     description: "test",
@@ -357,7 +358,7 @@ test("getRecipesByCategory should not return VIP recipe Data if user is not VIP 
           userId: authorUser._id,
           email: authorUser.email,
           role: authorUser.role,
-          isVIP: testUser.isVIP,
+          isVIP: authorUser.isVIP,
         },
       },
     }
@@ -366,7 +367,7 @@ test("getRecipesByCategory should not return VIP recipe Data if user is not VIP 
   const catID = recipe.body.singleResult.data?.CreateRecipe.categories[0].id;
 
   for (let i = 1; i < 5; i++) {
-    const recipeVariables = createReciptMutationVariables({
+    const recipeVariables = createRecipeMutationVariables({
       name: `Recipe_${i}`,
       categories: ["testCat"],
     });
@@ -408,5 +409,54 @@ test("getRecipesByCategory should not return VIP recipe Data if user is not VIP 
   assert(response.body.kind === "single");
   expect(response.body.singleResult.data?.getRecipesByCategory).toMatchObject(
     queryGetRecipesByCategoryVIPResult
+  );
+}, 30000);
+
+test("updateRecipe should change fileds in existing recipe", async () => {
+  const authorUser = await createUser("Author");
+  const recipeVariables = createRecipeMutationVariables({});
+
+  const recipe = await server.executeOperation<Record<string, { id: string }>>(
+    {
+      query: createRecipeMutation,
+      variables: recipeVariables,
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: authorUser._id,
+          email: authorUser.email,
+          role: authorUser.role,
+          isVIP: authorUser.isVIP,
+        },
+      },
+    }
+  );
+  assert(recipe.body.kind === "single");
+  const updatedRecipe = await server.executeOperation<
+    Record<string, { name: string }>
+  >(
+    {
+      query: updateRecipeMutation,
+      variables: {
+        id: recipe.body.singleResult.data?.CreateRecipe.id,
+        recipeData: { name: "newName" },
+      },
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: authorUser.id,
+          email: authorUser.email,
+          role: authorUser.role,
+          isVIP: authorUser.isVIP,
+        },
+      },
+    }
+  );
+
+  assert(updatedRecipe.body.kind === "single");
+  expect(updatedRecipe.body.singleResult.data?.updateRecipe.name).toBe(
+    "newName"
   );
 }, 30000);

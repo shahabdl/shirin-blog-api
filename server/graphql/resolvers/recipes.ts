@@ -5,6 +5,7 @@ import {
   GetRecipesByCatArgs,
   GetSingleRecipeByIdArgs,
   GraphQlContext,
+  UpdateRecipeArgs,
 } from "../../utils/typedef";
 import user from "../../db/models/user";
 import mongoose from "mongoose";
@@ -56,6 +57,13 @@ const RecipeResolvers = {
       return foundRecipe.toJSON();
     },
 
+    /**
+     *
+     * @returns depend on user VIP status or role
+     * if user is not authorized for VIP content then only
+     * name, title, image and description of that recipe will be sent
+     * to client
+     */
     getRecipesByCategory: async (
       _: any,
       args: GetRecipesByCatArgs,
@@ -188,6 +196,37 @@ const RecipeResolvers = {
         { path: "author" },
       ]);
       return populatedRecipe.toJSON();
+    },
+
+    updateRecipe: async (
+      _: any,
+      args: UpdateRecipeArgs,
+      context: GraphQlContext
+    ) => {
+      if (!context.userData || !context.userData.userId) {
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
+      }
+      const { userId } = context.userData;
+      if (!mongoose.isValidObjectId(userId)) {
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
+      }
+      if (context.userData.role !== "Author") {
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
+      }
+      let requestedRecipe = await recipe.findByIdAndUpdate(args.id, {
+        ...args.recipeData,
+      });
+      if(!requestedRecipe){
+        throw new GraphQLError('requested recipe was not found!')
+      }
+      await requestedRecipe.save();
+
+      const updatedRecipe = await recipe.findById(args.id);
+      if(!updatedRecipe){
+        throw new GraphQLError('somthing went wrong!');
+      }
+
+      return updatedRecipe;
     },
   },
 };

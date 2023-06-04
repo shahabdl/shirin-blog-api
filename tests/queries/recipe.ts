@@ -55,7 +55,7 @@ export const createRecipeMutation = `mutation CreateRecipe($recipeData: CreateRe
         }
     }`;
 
-export const createReciptMutationVariables = (
+export const createRecipeMutationVariables = (
   options: createRecipeMutationVariablesOptions = {}
 ) => {
   let defaultObject = {
@@ -292,3 +292,45 @@ export const queryGetRecipesByCategoryVIPResult = [
   { name: "Recipe_4", steps: ["step 1", "step 2", "step 3"] },
   { name: "Recipe_0", steps: null },
 ];
+
+export const updateRecipeMutation = `mutation UpdateRecipe($id:ID, $recipeData: CreateRecipeArgs) {
+  updateRecipe(id:$id, recipeData: $recipeData) {
+      title
+      author {
+          id
+          username
+      }
+      description
+      difficulty
+      id
+      image
+      name
+      servings
+      status
+      steps
+      timing {
+          preperation
+          cookTime
+          additional
+      }
+      vip
+      categories {
+          author {
+          id
+          username
+          }
+          name
+          id
+      }
+      ingredients {
+          ingredient {
+          author {
+              username
+          }
+          id
+          name
+          }
+          quantity
+      }
+  }
+}`;
