@@ -47,6 +47,8 @@ const startApi = async () => {
         }),
       })
     );
+    app.use(express.static(__dirname + "/public"));
+
     httpServer.listen(port);
     console.log(`🚀  Server ready at: ${url}`);
   } catch (error) {
