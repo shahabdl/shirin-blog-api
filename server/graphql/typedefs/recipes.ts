@@ -16,8 +16,10 @@ const RecipeTypeDefs = `#graphql
         getRecipesByCategory(category: String, first: Int, offset: Int): [getRecipesResult]
     }
     type Mutation{
-        CreateRecipe(recipeData:CreateRecipeArgs) : CreateRecipeResponse
-        updateRecipe(id: ID, recipeData: CreateRecipeArgs) : CreateRecipeResponse
+        CreateRecipe(recipeData:CreateRecipeArgs): CreateRecipeResponse
+        updateRecipe(id: ID, recipeData: CreateRecipeArgs): CreateRecipeResponse
+        likeRecipe(id: ID): String
+        unlikeRecipe(id: ID): String
     }
 
     type getRecipesResult {

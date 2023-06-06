@@ -5,6 +5,7 @@ import {
   GetRecipesByCatArgs,
   GetSingleRecipeByIdArgs,
   GraphQlContext,
+  LikeRecipeArgs,
   UpdateRecipeArgs,
 } from "../../utils/typedef";
 import user from "../../db/models/user";
@@ -181,7 +182,7 @@ const RecipeResolvers = {
         image: recipeData.image,
         timing: { ...recipeData.timing },
         servings: recipeData.servings,
-        likes: {},
+        likes: [],
         vip: recipeData.vip ? true : false,
         author: userId,
       });
@@ -216,17 +217,75 @@ const RecipeResolvers = {
       let requestedRecipe = await recipe.findByIdAndUpdate(args.id, {
         ...args.recipeData,
       });
-      if(!requestedRecipe){
-        throw new GraphQLError('requested recipe was not found!')
+      if (!requestedRecipe) {
+        throw new GraphQLError("requested recipe was not found!");
       }
       await requestedRecipe.save();
 
       const updatedRecipe = await recipe.findById(args.id);
-      if(!updatedRecipe){
-        throw new GraphQLError('somthing went wrong!');
+      if (!updatedRecipe) {
+        throw new GraphQLError("somthing went wrong!");
       }
 
       return updatedRecipe;
+    },
+
+    likeRecipe: async (
+      _: any,
+      args: LikeRecipeArgs,
+      context: GraphQlContext
+    ) => {
+      if (!context.userData || !context.userData.userId) {
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
+      }
+      const { userId } = context.userData;
+
+      const requestedRecipe = await recipe.findByIdAndUpdate(args.id);
+      const requestedUser = await user.findByIdAndUpdate(userId);
+
+      if (!requestedRecipe) {
+        throw new GraphQLError(getText("RECIPE_NOT_FOUND", "EN"));
+      }
+      if (!requestedUser) {
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
+      }
+
+      if (requestedRecipe.likes) {
+        if (
+          requestedRecipe.likes.find(
+            (id) => id.toString() === userId.toString()
+          )
+        ) {
+          return "success";
+        }
+      }
+
+      requestedUser?.likes?.push(args.id);
+      requestedRecipe.likes?.push(userId);
+
+      try {
+        await requestedRecipe.save();
+        await requestedUser.save();
+      } catch (error) {
+        throw new GraphQLError(getText("SERVER_ERROR_500", "EN"));
+      }
+
+      return "success";
+    },
+
+    unlikeRecipe: async (
+      _: any,
+      args: LikeRecipeArgs,
+      context: GraphQlContext
+    ) => {
+      if (!context.userData || !context.userData.userId) {
+        throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
+      }
+      const { userId } = context.userData;
+      const updateduesr = await user.findByIdAndUpdate(userId, { $pull: { likes: args.id.toString() } });
+      const updatedRecipe = await recipe.findByIdAndUpdate(args.id, { $pull: { likes: userId.toString() } });
+
+      return "success";
     },
   },
 };

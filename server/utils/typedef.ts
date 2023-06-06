@@ -102,3 +102,7 @@ export interface CreateCommentArgs {
 export interface GetSingleRecipeByIdArgs {
   Id: string;
 }
+
+export interface LikeRecipeArgs {
+  id: mongoose.Types.ObjectId;
+}

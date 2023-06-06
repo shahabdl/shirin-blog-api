@@ -7,6 +7,7 @@ import {
   CreateRecipeResult,
   createRecipeMutation,
   createRecipeMutationVariables,
+  likeRecipeMutation,
   queryGetRecipes,
   queryGetRecipesByCategory,
   queryGetRecipesByCategoryResult,
@@ -19,6 +20,7 @@ import assert from "assert";
 import mongoose from "mongoose";
 import { createSession } from "./utils/session";
 import { createUser } from "./utils/session";
+import getText from "../server/output_texts/get-output";
 
 const server = new ApolloServer({
   typeDefs: TypeDefs,
@@ -83,16 +85,16 @@ test("server should prevent creating recipe when userId is not valid", async () 
 });
 
 test("api should create new recipe, categories and ingredients with current user as author and return them to client", async () => {
-  const { token, testUser } = await createSession("Author");
+  const { testUser } = await createSession("Author");
   const response = await server.executeOperation(
     {
       query: createRecipeMutation,
-      variables: createRecipeMutationVariables(),
+      variables: createRecipeMutationVariables({}),
     },
     {
       contextValue: {
         userData: {
-          userId: new mongoose.Types.ObjectId(testUser._id),
+          userId: testUser._id,
           email: testUser.email,
           role: testUser.role,
           isVIP: testUser.isVIP,
@@ -460,3 +462,34 @@ test("updateRecipe should change fileds in existing recipe", async () => {
     "newName"
   );
 }, 30000);
+
+test("not registered user should not be able to like a recipe", async () => {
+  const authorUser = await createUser("Author");
+  const recipe = await server.executeOperation<Record<string, { id: string }>>(
+    {
+      query: createRecipeMutation,
+      variables: createRecipeMutationVariables({}),
+    },
+    {
+      contextValue: {
+        userData: {
+          userId: authorUser.id,
+          email: authorUser.email,
+          role: authorUser.role,
+          isVIP: authorUser.isVIP,
+        },
+      },
+    }
+  );
+
+  assert(recipe.body.kind === "single");
+  const recipeId = recipe.body.singleResult.data?.CreateRecipe.id;
+  const likeMutation = await server.executeOperation({
+    query: likeRecipeMutation,
+    variables: { id: recipeId },
+  });
+  assert(likeMutation.body.kind === "single");
+  expect(likeMutation.body.singleResult.errors?.at(0)?.message).toBe(
+    getText("NOT_AUTHORIZED_MESSAGE", "EN")
+  );
+});

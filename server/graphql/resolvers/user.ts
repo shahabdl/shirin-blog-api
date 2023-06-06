@@ -32,7 +32,7 @@ const UserResolvers = {
           name: "",
           image: "",
           likes: [],
-          role: "user",
+          role: "User",
         });
       } catch (error) {
         console.log("in signup resolver", error);

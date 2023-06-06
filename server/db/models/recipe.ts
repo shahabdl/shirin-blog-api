@@ -7,19 +7,6 @@ const TimingSchema = new Schema({
   additional: { type: Number, required: [true, "additional required"] },
 });
 
-const LikesSchema = new Schema(
-  {
-    count: { type: Number },
-    likedUsers: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "user",
-      },
-    ],
-  },
-  { _id: false }
-);
-
 const IngredientSchema = new Schema({
   ingredient: {
     type: Schema.Types.ObjectId,
@@ -27,6 +14,7 @@ const IngredientSchema = new Schema({
   },
   quantity: { type: String, required: [true, "quantity required"] },
 });
+
 
 const RecipeSchema = new Schema({
   name: { type: String, required: [true, "recipe require name!"] },
@@ -43,7 +31,7 @@ const RecipeSchema = new Schema({
   },
   status: { type: String, enum: ["PUBLISHED", "DRAFT", "TRASH"] },
   author: { type: Schema.Types.ObjectId, ref: "user" },
-  likes: { type: LikesSchema, required: [true, "like required"] },
+  likes: { type: [Schema.Types.ObjectId], ref: "user" },
   ingredients: { type: [IngredientSchema], default: null },
   steps: { type: [String] },
   comments: { type: [Schema.Types.ObjectId], ref: "comment" },

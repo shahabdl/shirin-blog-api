@@ -284,7 +284,6 @@ export const queryGetRecipesByCategoryResult = [
   { name: "Recipe_5" },
   { name: "Recipe_6" },
 ];
-
 export const queryGetRecipesByCategoryVIPResult = [
   { name: "Recipe_1", steps: ["step 1", "step 2", "step 3"] },
   { name: "Recipe_2", steps: ["step 1", "step 2", "step 3"] },
@@ -334,3 +333,9 @@ export const updateRecipeMutation = `mutation UpdateRecipe($id:ID, $recipeData: 
       }
   }
 }`;
+
+export const likeRecipeMutation = `
+  mutation LikeRecipe($id: ID) {
+    likeRecipe(id: $id)
+  }
+`

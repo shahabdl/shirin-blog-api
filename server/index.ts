@@ -27,6 +27,7 @@ const startApi = async () => {
       resolvers: Resolvers,
       introspection: process.env.NODE_ENV !== "production",
       csrfPrevention: true,
+      includeStacktraceInErrorResponses: process.env.NODE_ENV !== "production",
     });
     await server.start();
     const corsOption = { origin: "http://localhost:3000", credentials: true };
