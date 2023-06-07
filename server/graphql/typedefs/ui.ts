@@ -14,12 +14,23 @@ const UITypeDefs = `#graphql
         page: String
         slide: [Slide]
     }
+    type GridViewStructure {
+        id: ID
+        page: String
+        structureLarge: [[String]]
+        structureMedium: [[String]]
+        structureSmall: [[String]]
+        structureMobile: [[String]]
+
+    }
     type Query {
         getSlider(page: String): Slider
+        getGridViewStructure(page: String): GridViewStructure
     }
 
     type Mutation {
         createSlider(page: String, slides: [SlideArgumens]): Slider
+        createGridViewStructure(page: String, structureLarge:[[String]], structureMedium:[[String]],structureSmall:[[String]], structureMobile:[[String]]): GridViewStructure
     }
 `;
 export default UITypeDefs;

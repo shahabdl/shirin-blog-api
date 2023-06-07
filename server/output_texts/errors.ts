@@ -7,6 +7,7 @@ export const TEXTS = [
   "COMMENT_MUST_HAVE_PARENT",
   "ALREADY_LIKED_RECIPE",
   "SLIDER_NOT_FOUND",
+  "GRID_VIEW_NOT_FOUND",
 ] as const;
 export const EN: Record<string, string> = {
   NOT_AUTHORIZED_MESSAGE: "You are not athorized to do this action!",
@@ -18,4 +19,5 @@ export const EN: Record<string, string> = {
   COMMENT_MUST_HAVE_PARENT: "Comments Must have a comment or recipe parent!",
   ALREADY_LIKED_RECIPE: "User has already liked this recipe",
   SLIDER_NOT_FOUND: "slider for this page was not found!",
+  GRID_VIEW_NOT_FOUND: "Grid view structure for this page is not available!"
 };

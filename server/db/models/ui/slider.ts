@@ -15,11 +15,11 @@ const SliderSchema = new Schema({
 });
 
 SliderSchema.set("toJSON", {
-    transform: (_, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-      delete ret.__v;
-    },
-  });
+  transform: (_, ret) => {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
 
 export default mongoose.model("slider", SliderSchema);
