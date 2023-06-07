@@ -22,13 +22,26 @@ const RecipeResolvers = {
         .find()
         .skip(args.offset)
         .limit(args.first);
-      // const populatedRecipes = await foundRecipes.populate([
-      //   { path: "categories", populate: { path: "author" } },
-      //   { path: "ingredients.ingredient", populate: { path: "author" } },
-      //   { path: "comments" },
-      //   { path: "author" },
-      // ]);
-      return foundRecipes;
+
+      let jsonRecipes = [];
+      for (let index in foundRecipes) {
+        await foundRecipes[index].populate([
+          { path: "categories", populate: { path: "author" } },
+          { path: "ingredients.ingredient", populate: { path: "author" } },
+          { path: "comments" },
+          { path: "author" },
+        ]);
+        const likedByThisUser = foundRecipes[index].likes.includes(
+          context.userData.userId
+        );
+        const likesCount = foundRecipes[index].likes.length;
+        jsonRecipes.push({
+          ...foundRecipes[index].toJSON(),
+          likesCount,
+          likedByThisUser,
+        });
+      }
+      return jsonRecipes;
     },
 
     getSingleRecipeById: async (
@@ -55,7 +68,12 @@ const RecipeResolvers = {
         { path: "comments" },
         { path: "author" },
       ]);
-      return foundRecipe.toJSON();
+      const likedByThisUser = foundRecipe.likes.includes(
+        context.userData.userId
+      );
+      const likesCount = foundRecipe.likes.length;
+
+      return { ...foundRecipe.toJSON(), likedByThisUser, likesCount };
     },
 
     /**
@@ -282,8 +300,12 @@ const RecipeResolvers = {
         throw new GraphQLError(getText("NOT_AUTHORIZED_MESSAGE", "EN"));
       }
       const { userId } = context.userData;
-      const updateduesr = await user.findByIdAndUpdate(userId, { $pull: { likes: args.id.toString() } });
-      const updatedRecipe = await recipe.findByIdAndUpdate(args.id, { $pull: { likes: userId.toString() } });
+      const updateduesr = await user.findByIdAndUpdate(userId, {
+        $pull: { likes: args.id.toString() },
+      });
+      const updatedRecipe = await recipe.findByIdAndUpdate(args.id, {
+        $pull: { likes: userId.toString() },
+      });
 
       return "success";
     },

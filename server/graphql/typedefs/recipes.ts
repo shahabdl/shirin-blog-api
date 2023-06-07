@@ -38,6 +38,8 @@ const RecipeTypeDefs = `#graphql
         timing: TimingType
         servings: Int
         vip: Boolean
+        likesCount: Int
+        likedByThisUser: Boolean
     }
     
     input IngredientsInput{
