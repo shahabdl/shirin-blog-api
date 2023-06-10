@@ -3,6 +3,7 @@ import user from "../../db/models/user";
 import { AuthArgs } from "../../utils/typedef";
 import bcrypt from "bcrypt";
 import createNewToken from "../../utils/token";
+import getText from "../../output_texts/get-output";
 
 const UserResolvers = {
   Mutation: {
@@ -14,7 +15,6 @@ const UserResolvers = {
       if (searchedUser) {
         throw new GraphQLError("user already exists!");
       }
-
       let hashedPassword = "";
       try {
         hashedPassword = await bcrypt.hash(args.password, 10);
@@ -38,6 +38,10 @@ const UserResolvers = {
         console.log("in signup resolver", error);
         throw new GraphQLError("Server error! pls try again later");
       }
+      //to clear typescript error
+      if (!newUser.email) {
+        throw new GraphQLError(getText("SERVER_ERROR_500", "EN"));
+      }
       let token = createNewToken({
         userId: newUser._id.toString(),
         email: newUser.email,
@@ -59,23 +63,27 @@ const UserResolvers = {
       const { email, password: hashedPassword } = args;
       const searchedUser = await user.findOne({ email });
       if (!searchedUser) {
-        throw new GraphQLError("Wrong Credentials!");
+        throw new GraphQLError(getText("WRONG_CREDENTIALS", "EN"));
+      }
+      //to clear typescript error
+      if (!searchedUser.password || !searchedUser.email) {
+        throw new GraphQLError(getText("SERVER_ERROR_500", "EN"));
       }
       const passwordIsValid = await bcrypt.compare(
         args.password,
         searchedUser.password
       );
       if (!passwordIsValid) {
-        throw new GraphQLError("Wrond Credentials!");
+        throw new GraphQLError(getText("WRONG_CREDENTIALS", "EN"));
       }
       let token;
       try {
-        token = await createNewToken({
+        token = createNewToken({
           userId: searchedUser._id.toString(),
           email: searchedUser.email,
         });
       } catch (error) {
-        throw new GraphQLError("Server Error! pls try again later!");
+        throw new GraphQLError(getText("SERVER_ERROR_500", "EN"));
       }
       return {
         userData: {
@@ -86,7 +94,6 @@ const UserResolvers = {
         token,
       };
     },
-    
   },
 };
 

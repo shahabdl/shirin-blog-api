@@ -35,11 +35,24 @@ const RecipeResolvers = {
           context.userData.userId
         );
         const likesCount = foundRecipes[index].likes.length;
-        jsonRecipes.push({
-          ...foundRecipes[index].toJSON(),
-          likesCount,
-          likedByThisUser,
-        });
+
+        let completeRecipe = {};
+        if (foundRecipes[index].vip) {
+          completeRecipe = {
+            ...foundRecipes[index].toJSON(),
+            ingredients: null,
+            steps: null,
+            likesCount,
+            likedByThisUser,
+          };
+        }else{
+          completeRecipe = {
+            ...foundRecipes[index].toJSON(),
+            likesCount,
+            likedByThisUser,
+          };
+        }
+        jsonRecipes.push(completeRecipe);
       }
       return jsonRecipes;
     },
